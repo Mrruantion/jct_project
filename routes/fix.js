@@ -224,7 +224,6 @@ exports.get_apply2 = function (req, res) {
                     op_d.user = row4;
                     res.json(op_d)
                 })
-
             })
         })
     })
@@ -300,6 +299,8 @@ exports.update_apply2_spstatus = function (req, res) {
                         db.query(str3, function (err3, row3) {
                             res.json(row2)
                         })
+                    }else {
+                        res.json(row2)
                     }
 
                 })
@@ -310,6 +311,8 @@ exports.update_apply2_spstatus = function (req, res) {
                     db.query(str3, function (err3, row3) {
                         res.json(row1)
                     })
+                }else {
+                    res.json(row1)
                 }
             }
         })

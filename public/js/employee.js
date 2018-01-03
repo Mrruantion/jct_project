@@ -358,6 +358,8 @@ var initFrmEmployee = function(title, flag, username, password, name, sex, tel, 
     $('#use_vehicle').prop("checked", responsibility.indexOf('1') > -1);
     $('#manage_vehicle').prop("checked", responsibility.indexOf('2') > -1);
     $('#dispatch_vehicle').prop("checked", responsibility.indexOf('3') > -1);
+    $('#secretary').prop("checked", responsibility.indexOf('4') > -1);
+    $('#finance').prop("checked", responsibility.indexOf('5') > -1);
     $('#is_driver').prop("checked", isDriver);
     $('#is_in_charge').prop("checked", isInCharge);
     $('#create_time').val(create_time);
@@ -655,6 +657,8 @@ var customerAdd = function(){
     if($("#use_vehicle").prop("checked"))responsibility.push("1");
     if($("#manage_vehicle").prop("checked"))responsibility.push("2");
     if($("#dispatch_vehicle").prop("checked"))responsibility.push("3");
+    if($("#secretary").prop("checked"))responsibility.push("4");
+    if($("#finance").prop("checked"))responsibility.push("5");
     var is_driver = $('#is_driver').prop("checked");
     var is_in_charge = $('#is_in_charge').prop("checked");
 
@@ -710,6 +714,8 @@ var customerEdit = function(){
     if($("#use_vehicle").prop("checked"))responsibility.push("1");
     if($("#manage_vehicle").prop("checked"))responsibility.push("2");
     if($("#dispatch_vehicle").prop("checked"))responsibility.push("3");
+    if($("#secretary").prop("checked"))responsibility.push("4");
+    if($("#finance").prop("checked"))responsibility.push("5");
     var is_driver = $('#is_driver').prop("checked");
     var is_in_charge = $('#is_in_charge').prop("checked");
 

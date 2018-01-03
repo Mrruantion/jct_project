@@ -20,7 +20,8 @@ var MemcachedStore = require('connect-memcached')(session);
 var _index = require('./routes/indexs');
 var apply = require('./routes/apply');
 var fix = require('./routes/fix');
-var pc = require('./routes/pc')
+var pc = require('./routes/pc');
+var mysql_api = require('./routes/mysql_api');
 
 var mysql = require("mysql");
 var con = mysql.createPool({
@@ -121,12 +122,13 @@ app.get('/branch', routes.branch);
 app.get('/callback', routes.callback);
 app.get('/exists', routes.exists);
 
-app.get('/usecar',routes.usecar);
-app.get('/repair_car',routes.repaircar);
-app.get('/usecar_detail',routes.usecar_detail);
-app.get('/usecar_apply',routes.usecar_apply);
-app.get('/repaircar_detail',routes.repaircar_detail);
-app.get('/repaircar_apply',routes.repaircar_apply)
+app.get('/usecar', routes.usecar);
+app.get('/repair_car', routes.repaircar);
+app.get('/usecar_detail', routes.usecar_detail);
+app.get('/usecar_apply', routes.usecar_apply);
+app.get('/repaircar_detail', routes.repaircar_detail);
+app.get('/repaircar_apply', routes.repaircar_apply);
+app.get('/repair_accident', routes.repair_accident);
 
 
 
@@ -162,8 +164,14 @@ app.get('/fix_apply/update_apply2_spstatus', fix.update_apply2_spstatus);
 app.get('/pc/_getapply', pc._getapply);
 app.get('/pc/_getaudit', pc._getaudit);
 app.get('/pc/_getauditing', pc._getauditing);
-app.get('/pc/pcsearch',pc.pcsearch);
-app.get('/pc/pcusesearch',pc.pcusesearch);
+app.get('/pc/pcsearch', pc.pcsearch);
+app.get('/pc/pcusesearch', pc.pcusesearch);
+
+app.get('/mysql_api/list', mysql_api.list);
+app.get('/mysql_api/update', mysql_api.update);
+app.get('/mysql_api/create', mysql_api.create);
+app.get('/mysql_api/delete', mysql_api.delete);
+
 
 
 if (process.env.NODE_ENV == "development") {

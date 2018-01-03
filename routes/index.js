@@ -594,3 +594,10 @@ exports.repaircar_apply = function (req, res) {
     // res.redirect('/');
     // }
 }
+exports.repair_accident = function (req, res) {
+    // if(checkValid(req)){
+    res.render('repair_accident', { opt: req.session.opt, groups: req.session.groups });
+    // }else{
+    // res.redirect('/');
+    // }
+}

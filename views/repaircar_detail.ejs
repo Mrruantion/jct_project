@@ -276,6 +276,7 @@
                                 <th>类别</th>
                                 <th>项目（材料）编号</th>
                                 <th>项目名称 </th>
+                                <th>历史记录 </th>
                                 <th>数量</th>
                                 <th>单价</th>
                                 <th>金额</th>
@@ -290,7 +291,7 @@
         </div>
 
 
-        <div class="row clearfix" style="margin-bottom:20px" id="print_button">
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="print_1button">
             <div class="col-md-12 column" style="text-align:center">
                 <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="print">
@@ -304,6 +305,12 @@
         <div class="row clearfix" style="margin-bottom:20px;display:none" id="other_button">
             <div class="col-md-12 column" style="text-align:center">
                 <!-- <div class="btn-group"> -->
+                <span style="margin-right:40px;display:none" id="istakezgy">
+                    <label>
+                        <input name="istake" type="checkbox" style="position:relative;top:2px" />专管员
+                    </label>
+                </span>
+
                 <button class="btn btn-default" type="button" id="agree">
                     同意
                 </button>
@@ -318,13 +325,93 @@
                 <button class="btn btn-default" type="button" id="backout">
                     撤销
                 </button>
-                <button class="btn btn-default" type="button" id="tjrq" style="display:none">
-                    提交日期
+                <button class="btn btn-default" type="button" id="submitAndaudit">
+                    确认并提交审核
                 </button>
             </div>
         </div>
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="reimburse_button">
+            <div class="col-md-12 column" style="text-align:center">
+                <!-- <div class="btn-group"> -->
+                <button class="btn btn-default" type="button" id="reimburse">
+                    报销审批
+                </button>
+               
+            </div>
+        </div>
     </div>
+    <div class="js_dialog" id="androidDialog1" style="opacity: 1; display: none;">
+        <div class="weui-mask"></div>
+        <div class="weui-dialog weui-skin_android">
+            <div class="weui-dialog__hd">
+                <strong class="weui-dialog__title">同意并选择下一级审核人</strong>
+            </div>
+            <div class="weui-dialog__bd" style="max-height: 250px; overflow-y: auto;" id="nextAuditer">
+                <!-- <label>
+                    <div class="weui-cell weui-cell_access" id="` + str + `">
+                        <input type="radio" style="margin-right:5px" name='auditer' checked/>
+                        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+                            <img src="js/merge/img/1.png" style="width: 50px;display: block">
+                        </div>
+                        <div class="weui-cell__bd">
+                            <p>xxx</p>
+                            <p style="font-size: 13px;color: #888888;">公司领导</p>
+                        </div>
+                    </div>
+                </label>
+                <label>
+                    <div class="weui-cell weui-cell_access" id="` + str + `">
+                        <input type="radio" style="margin-right:5px" name='auditer' checked/>
+                        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+                            <img src="js/merge/img/1.png" style="width: 50px;display: block">
+                        </div>
+                        <div class="weui-cell__bd">
+                            <p>xxx</p>
+                            <p style="font-size: 13px;color: #888888;">公司领导</p>
+                        </div>
+                    </div>
+                </label> -->
+                <div class="weui-cell weui-cell_access">
+                    <input type="radio" style="margin-right:5px" name='auditer' checked id="ddd" />
+                    <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+                        <img src="js/merge/img/1.png" style="width: 50px;display: block">
+                    </div>
+                    <div class="weui-cell__bd">
+                        <p>xxx</p>
+                        <p style="font-size: 13px;color: #888888;">公司领导</p>
+                    </div>
+                </div>
+                <div class="weui-cell weui-cell_access">
+                    <input type="radio" style="margin-right:5px" name='auditer' checked id="ddd" />
+                    <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+                        <img src="js/merge/img/1.png" style="width: 50px;display: block">
+                    </div>
+                    <div class="weui-cell__bd">
+                        <p>xxx</p>
+                        <p style="font-size: 13px;color: #888888;">公司领导</p>
+                    </div>
+                </div>
+            </div>
+            <div class="weui-dialog__ft">
+                <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary " id="audit_commit">确定</a>
+                <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" id="audit_cancle">取消</a>
+            </div>
+        </div>
+    </div>
+    <script src="js/merge/js/zepto.min.js"></script>
     <script src="js/merge/js/weui.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/merge/js/assets/paging.js"></script>
+    <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script src='js/jquery.cookie.js'></script>
+    <script src='js/md5.js'></script>
+    <script src="js/system.js"></script>
+    <script src="js/wistorm/md5.js"></script>
+    <script src="js/wistorm/define.js"></script>
+    <script src="js/wistorm/wistorm.js"></script>
+    <script src="js/json.js"></script>
+    <script src="js/locales.js"></script>
     <script src="js/merge/js/public.js"></script>
     <script src="js/merge/js/pc/repair_detail.js"></script>
 </body>

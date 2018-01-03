@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>用车</title>
+    <title>车修</title>
     <script src="js/merge/js/assets/jquery-3.2.1.min.js"></script>
     <script src="js/merge/js/assets/paging.js"></script>
     <!-- <script src="js/merge/js/assets/bootstrap/js/bootstrap.js"></script> -->
@@ -42,28 +42,38 @@
                 <div class="col-md-12 column">
                     <div class="navbar ">
                         <div class="navbar-inner">
-                            <div class="container">
+                            <!-- <div class="container">
                                 <ul class="nav">
                                     <li class="active">
                                         <a class="brand" href="#">车修</a>
                                     </li>
-                                    <!-- <li>
-                                        <a href="#" id="Toggle_apply">申请</a>
-                                    </li> -->
-                                    <li id="ytj">
-                                        <a href="#">已提交</a>
-                                    </li>
                                 </ul>
                                 <ul class="nav">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
+                                            记录
+                                            <b class="caret"></b>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li id="ytj">
+                                                <a href="#">车辆维修</a>
+                                            </li>
+                                            <li id="sgsb" style="display:none">
+                                                <a href="#">事故申报</a>
+                                            </li>
+                                            <li id="dbx" style="display:none">
+                                                <a href="#">待报销</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <ul class="nav" id="ldshow" style="display:none">
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
                                             审核
                                             <b class="caret"></b>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <!-- <li id="ytj">
-                                                <a href="#">已提交</a>
-                                            </li> -->
                                             <li id="ysh">
                                                 <a href="#">已审核</a>
                                             </li>
@@ -74,10 +84,114 @@
                                         </ul>
                                     </li>
                                 </ul>
+                                <ul class="nav" id="glyshow" style="display:none">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
+                                            审批信息
+                                            <b class="caret"></b>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li id="ksdldsp">
+                                                <a href="#">科所队领导审批</a>
+                                            </li>
+                                            <li id="jwbzsldsp">
+                                                <a href="#">警务保障室领导审批</a>
+                                            </li>
+                                            <li id="zgysp">
+                                                <a href="#">专管员审批</a>
+                                            </li>
+                                            <li id="jldsp">
+                                                <a href="#">局领导审批</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
                                 <div class="navbar-search pull-left">
-                                    <input type="text" class="search-query" placeholder="输入车牌号码或者使用人" id="searchValue">
+                                    <input type="text" class="search-query" placeholder="输入车牌号码" id="searchValue">
                                     <button type="submit" class="btn btn-default" style="margin-top:0" id="search">查询</button>
-                                    <button type="button" class="btn btn-default" style="margin-top:0" id="Toggle_apply">申请</button>
+                                    <button type="button" class="btn btn-default" style="margin-top:0" id="Toggle_apply">维修申请</button>
+                                    <button type="button" class="btn btn-default" style="margin-top:0;display:none" id="Toggle_accident">事故申报</button>
+                                    <button type="button" class="btn btn-default" style="margin-top:0" id="liucheng">流程</button>
+                                </div>
+                            </div> -->
+                            <div class="container">
+                                <ul class="nav">
+                                    <li class="active">
+                                        <a class="brand" href="#">车修</a>
+                                    </li>
+                                </ul>
+                                <ul class="nav">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
+                                            车辆维修流程
+                                            <b class="caret"></b>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li id="ksd">
+                                                <a href="#">科所队审批</a>
+                                            </li>
+                                            <li id="hqk">
+                                                <a href="#">后勤科审批</a>
+                                            </li>
+                                            <li id="jld">
+                                                <a href="#">局领导审批</a>
+                                            </li>
+                                            <li id="zgy">
+                                                <a href="#">专管员审批</a>
+                                            </li>
+                                            <li id="bxsp">
+                                                <a href="#">报销审批</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <ul class="nav" id="ldshow" style="">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
+                                            查询统计
+                                            <b class="caret"></b>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li id="wxjlcx">
+                                                <a href="#">维修记录查询</a>
+                                            </li>
+                                            <li id="sgcx">
+                                                <a href="#">事故查询</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <ul class="nav" id="glyshow" style="">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle dropdown-toggle1" data-toggle="dropdown">
+                                            系统管理
+                                            <b class="caret"></b>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li id="ksdldsp">
+                                                <a href="#">用户管理</a>
+                                            </li>
+                                            <li id="jwbzsldsp">
+                                                <a href="#">角色管理</a>
+                                            </li>
+                                            <li id="zgysp">
+                                                <a href="#">维修厂维护</a>
+                                            </li>
+                                            <li id="jldsp">
+                                                <a href="#">部门维护</a>
+                                            </li>
+                                            <li id="jldsp">
+                                                <a href="#">记录删除</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div class="navbar-search pull-left">
+                                    <!-- <input type="text" class="search-query" placeholder="输入车牌号码" id="searchValue"> -->
+                                    <!-- <button type="submit" class="btn btn-default" style="margin-top:0" id="search">查询</button> -->
+                                    <button type="button" class="btn btn-default" style="margin-top:0" id="Toggle_apply">维修申请</button>
+                                    <button type="button" class="btn btn-default" style="margin-top:0;display:none" id="Toggle_accident">事故申报</button>
+                                    <!-- <button type="button" class="btn btn-default" style="margin-top:0" id="liucheng">流程</button> -->
                                 </div>
                             </div>
                         </div>
@@ -121,8 +235,44 @@
                             </tbody>
                         </table>
                     </div>
-
+                    <div id="table_scroll1" style="overflow-y:auto;margin-left:10px;display:none">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>号码号牌</th>
+                                    <th>出险时间</th>
+                                    <th>出险地点</th>
+                                    <th>责任人</th>
+                                    <th>责任分成</th>
+                                    <th>赔偿金额</th>
+                                    <th>人员赔偿费</th>
+                                    <th>备注</th>
+                                </tr>
+                            </thead>
+                            <tbody id="repair_info1">
+                                <tr>
+                                    <td colspan="12" style="text-align:center">没有数据！</td>
+                                </tr>
+                                <!-- <tr class="info">
+                                        <td> 1</td>
+                                        <td> 浙C0123警 </td>
+                                        <td>小型汽车</td>
+                                        <td>其他</td>
+                                        <td>3000以上</td>
+                                        <td>专管员</td>
+                                        <td>2017-12-04</td>
+                                        <td> 审批中</td>
+                                        <td>维修申请</td>
+                                        <td>科所队审批 </td>
+                                        <td>122 </td>
+                                        <td><a>详情</a></td>
+                                    </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
                     <div id="page" class="page_div"></div>
+                    <div id="page1" class="page_div"></div>
                 </div>
             </div>
             <div style="position:absolute;top:0;right:0;width:360px;height:100%;border: 1px solid #CCC;display:none" id="pc_fix_apply">
@@ -130,12 +280,56 @@
 
                 <!-- </div> -->
             </div>
+            <div style="position:absolute;top:0;right:0;width:360px;height:100%;border: 1px solid #CCC;display:none" id="accident">
+                <!-- <div> -->
+
+                <!-- </div> -->
+            </div>
+        </div>
+        <div class="js_dialog" id="androidDialog1" style="opacity: 1; display: none;">
+            <div class="weui-mask"></div>
+            <div class="weui-dialog weui-skin_android" style="max-width:700px">
+                <div class="weui-dialog__hd">
+                    <strong class="weui-dialog__title">车修流程</strong>
+                </div>
+                <div class="weui-dialog__bd" style="max-height: 250px; overflow-y: auto;" id="nextAuditer">
+                    <h3>记录</h3>
+                    <h4>维修申请</h4>
+                    <p>查看本单位所有车辆维修申请记录</p>
+                    <h4>事故申报</h4>
+                    <p>查看本单位所有车辆事故申报记录</p>
+                    <h4>报销审批</h4>
+                    <p>查看所有待报销的维修申请记录并由财务进行报销审批</p>
+                    <h3>审核</h3>
+                    <h4>未审核</h4>
+                    <p>查看所有我未审核的申请表单</p>
+                    <h4>已审核</h4>
+                    <p>查看所有我已审核的申请表单包括已撤销的申请记录</p>
+                    <h3>审批</h3>
+                    <h4>科所队领导审批</h4>
+                    <p>查看科所队领导待审批记录</p>
+                    <h4>后勤科领导审批</h4>
+                    <p>查看后勤科领导待审批记录</p>
+                    <h4>专管员审批</h4>
+                    <p>查看专管员审批待审批记录</p>
+                    <h4>局领导审批</h4>
+                    <p>查看局领导审批待审批记录</p>
+                    <h3>维修申请</h3>
+                    <p>填写车辆维修申请表单并提交给后勤进行确认</p>
+                    <h3>事故申报</h3>
+                    <p>填写车辆事故申报表单</p>
+
+                </div>
+                <div class="weui-dialog__ft">
+                    <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary " id="audit_commit">确定</a>
+                    <!-- <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" id="audit_cancle">取消</a> -->
+                </div>
+            </div>
         </div>
         <% include html/footer.html %>
             <% include dialog/frmAccount.html %>
                 <script src="js/merge/js/weui.js"></script>
-                <script src="js/merge/js/public.js"></script>
-                <script src="js/merge/js/pc/repair.js"></script>
+
                 <script src="js/jquery.js"></script>
                 <script src="js/bootstrap.min.js"></script>
                 <script src="js/merge/js/assets/paging.js"></script>
@@ -157,6 +351,8 @@
                 <script src="js/locales.js"></script>
                 <!-- <script src="js/customer.js"></script> -->
                 <script src="js/account.js"></script>
+                <script src="js/merge/js/public.js"></script>
+                <script src="js/merge/js/pc/repair.js"></script>
                 <script>
                     $('#table_scroll')[0].style.height = window.innerHeight - 200 + 'px';
                     $('#_main')[0].style.height = window.innerHeight - 80 + 'px';

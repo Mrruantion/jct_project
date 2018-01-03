@@ -104,6 +104,8 @@
     "use_vehicle": "用车",
     "manage_vehicle": "维保",
     "dispatch_vehicle": "派车",
+    "secretary": "内勤",
+    "finance":"财务",
     "sex": "性别",
     "is_driver": "是否驾驶员",
     "is_in_charge": "是否专管员",

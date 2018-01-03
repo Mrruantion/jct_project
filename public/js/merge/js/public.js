@@ -276,3 +276,42 @@ W.getJSON = function (url, data, success) {
     };
     W.ajax(url, options);
 }
+
+W.$ajax = function (url, data, success) {
+    var data_s = {
+        limit: -1,
+        pageno: 1,
+        sorts: 'id'
+    }
+    Object.assign(data_s, data)
+    var option = {
+        url: url,
+        data: data_s,
+        dataType: "json",
+        type: 'get',
+        timeout: 10000,
+        success: success,
+        error: function (xhr, type, errorThrown) {
+            console.log(type + "___url:" + url);
+        }
+    }
+    $.ajax(option)
+}
+
+//文本框聚焦光标位置 0开头-1末尾
+W.set_text_value_position = function (obj, spos) {
+    var tobj = document.getElementById(obj);
+    if (spos < 0)
+        spos = tobj.value.length;
+    if (tobj.setSelectionRange) { //兼容火狐,谷歌  
+        setTimeout(function () {
+            tobj.setSelectionRange(spos, spos);
+            tobj.focus();
+        }
+            , 0);
+    } else if (tobj.createTextRange) { //兼容IE  
+        var rng = tobj.createTextRange();
+        rng.move('character', spos);
+        rng.select();
+    }
+}

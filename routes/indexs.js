@@ -146,6 +146,11 @@ exports.add_apply = function (req, res) {
         // if (applyid) {
         // console.log(spstatus_data,'ddddddd')
         // var i = 0;
+        var i=0,j=0;
+        spstatus_data.forEach(ele => {
+            ele ?  i++ : null;
+        })
+        
         spstatus_data.forEach(ele => {
             if (ele) {
                 var _sop = {
@@ -187,7 +192,11 @@ exports.add_apply = function (req, res) {
 
                 db.query(sstr, function (err, sres) {
                     console.log(sres, 'res')
-                    res.json(applyid)
+                    j++;
+                    if(i == j){
+                        res.json(applyid)
+                    }
+                    
                 })
             }
         })
@@ -469,8 +478,6 @@ exports.up_apply = function (req, res) {
         } else {
             res.json(row)
         }
-
-
     })
 }
 
@@ -496,9 +503,10 @@ exports.agree_apply = function (req, res) {
                 db.query(str2, function (error1, row1) {
                     res.json(row);
                 })
+            }else {
+                res.json(row);
             }
         }
-
     })
 }
 
