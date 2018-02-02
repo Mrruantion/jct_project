@@ -36,11 +36,12 @@ var login_depart_id = $.cookie('login_depart_id');
 
 function windowResize() {
     var height = $(window).height() - 122;
-    $('#customerTree').css({"height": height + "px"});
+    $('#customerTree').css({ "height": height + "px" });
 }
 
-// 客户详细信息
-function vehicleInfo(obj_id){
+// 车辆详细信息
+function vehicleInfo(obj_id) {
+    debugger;
     // var auth_code = $.cookie('auth_code');
     // var searchUrl = $.cookie('Host') + "vehicle/" + obj_id;
     // var searchData = { auth_code:auth_code };
@@ -51,37 +52,54 @@ function vehicleInfo(obj_id){
     query_json = {
         objectId: obj_id
     };
-    wistorm_api._get('vehicle', query_json, 'objectId,departId,name,model,did,sim,serviceExpireIn,contact,tel,remark', auth_code, true, function(json){
-        vehicleInfoSuccess(json.data);
-    });
+    // wistorm_api._get('vehicle', query_json, 'objectId,departId,name,model,did,sim,serviceExpireIn,contact,tel,remark', auth_code, true, function(json){
+    //     vehicleInfoSuccess(json.data);
+    // });
+    wistorm_api._list('vehicle', query_json, '', '', '-createdAt', 0, 0, 1, -1, $.cookie('auth_code'), true, function (json) {
+        vehicleInfoSuccess(json.data[0]);
+    })
+
 }
 
-function vehicleCustomerList(obj_id, obj_name, cust_id){
+function vehicleCustomerList(obj_id, obj_name, cust_id) {
     initFrmCustomerList("更换用户", obj_id, obj_name, cust_id);
     $("#divCustomerList").dialog("open");
 }
 
 // 跳转到日志页面
-function logInfo(device_id){
+function logInfo(device_id) {
     var logUrl = "/datalog?device_id=" + device_id;
     window.location.href = logUrl;
 }
 
-var vehicleInfoSuccess = function(json) {
+var vehicleInfoSuccess = function (json) {
     //alert(json);
+    debugger;
     validator_vehicle.resetForm();
     json.serviceExpireIn = NewDate(json.serviceExpireIn);
+
+    json.maintainExpireIn = json.maintainExpireIn || '';
+    json.insuranceExpireIn = json.insuranceExpireIn || '';
+    json.inspectExpireIn = json.inspectExpireIn || '';
+    json.maintainExpireIn = json.maintainExpireIn.indexOf('T') > -1 ? NewDate(json.maintainExpireIn) : '';
+    json.insuranceExpireIn = json.insuranceExpireIn.indexOf('T') > -1 ? NewDate(json.insuranceExpireIn) : '';
+    json.inspectExpireIn = json.inspectExpireIn.indexOf('T') > -1 ? NewDate(json.inspectExpireIn) : '';
     json.serviceExpireIn = json.serviceExpireIn.format("yyyy-MM-dd");
+    json.maintainExpireIn = json.maintainExpireIn.format("yyyy-MM-dd");
+    json.insuranceExpireIn = json.insuranceExpireIn.format("yyyy-MM-dd");
+    json.inspectExpireIn = json.inspectExpireIn.format("yyyy-MM-dd");
     var title = i18next.t("vehicle.edit_vehicle");
-    initFrmVehicle(title, 2, json.name, json.did, json.sim, json.model, json.serviceExpireIn, json.contact, json.tel, json.remark, json.departId);
+    // debugger;
+    initFrmVehicle(title, 2, json.name, json.did, json.sim, json.model, json.maintainMileage, json.maintainExpireIn, json.insuranceExpireIn, json.inspectExpireIn, json.serviceExpireIn, json.contact, json.tel, json.desc, json.remark, json.departId);
     $("#divVehicle").dialog("open");
 };
 
 // 初始化车辆信息窗体
-var initFrmVehicle = function(title, flag, obj_name, device_id, sim, obj_model, service_end_date, contact, tel, remark, departId){
+var initFrmVehicle = function (title, flag, obj_name, device_id, sim, obj_model, maintainMileage, maintainExpireIn, insuranceExpireIn, inspectExpireIn, service_end_date, contact, tel, desc, remark, departId) {
     $("#divVehicle").dialog("option", "title", title);
     vehicle_flag = flag;
     $('#obj_name').val(obj_name);
+    assignDepartId = departId;
     $('#depart_name').val(departs[departId] || '');
     edit_obj_name = obj_name;
     $('#device_id').val(device_id);
@@ -90,34 +108,39 @@ var initFrmVehicle = function(title, flag, obj_name, device_id, sim, obj_model, 
     $('#obj_model').val(obj_model);
     $('#contact').val(contact);
     $('#tel').val(tel);
+    $('#vehicleType')[0].selectedIndex = desc == '02' ? 1 : 0;
     $('#remark').val(remark);
+    $('#inspectExpireIn').val(inspectExpireIn);
+    $('#maintainMileage').val(maintainMileage);
+    $('#maintainExpireIn').val(maintainExpireIn);
+    $('#insuranceExpireIn').val(insuranceExpireIn)
     $('#service_end_date').val(service_end_date);
-    if(vehicle_flag == 1){
+    if (vehicle_flag == 1) {
         $('#device_id').removeAttr("disabled");
         $('#service_panel').show();
         $('#service_end_date_panel').hide();
-    }else{
-        if(device_id != ''){
-            $('#device_id').attr("disabled","disabled");
-            $('#bind').css("display","none");
-            $('#unbind').css("display","inline-block");
-        }else{
+    } else {
+        if (device_id != '') {
+            $('#device_id').attr("disabled", "disabled");
+            $('#bind').css("display", "none");
+            $('#unbind').css("display", "inline-block");
+        } else {
             $('#device_id').removeAttr("disabled");
-            $('#bind').css("display","inline-block");
-            $('#unbind').css("display","none");
+            $('#bind').css("display", "inline-block");
+            $('#unbind').css("display", "none");
         }
         $('#service_panel').hide();
         $('#service_end_date_panel').show();
     }
 };
 
-var initFrmCustomerList = function(title, obj_id, obj_name, cust_id){
+var initFrmCustomerList = function (title, obj_id, obj_name, cust_id) {
     $("#divCustomerList").dialog("option", "title", title);
     $('#change_obj_id').val(obj_id);
     $('#change_obj_name').val(obj_name);
     $('#change_cust_id').html("");
-    for(var i = 0; i < customers.length; i++){
-        $('#change_cust_id').append("<option value='"+customers[i].cust_id+"'>"+customers[i].cust_name+"</option>");
+    for (var i = 0; i < customers.length; i++) {
+        $('#change_cust_id').append("<option value='" + customers[i].cust_id + "'>" + customers[i].cust_name + "</option>");
     }
     $("#change_cust_id").get(0).value = cust_id;
 };
@@ -129,19 +152,21 @@ function getAllDepart() {
     var query_json = {
         uid: dealer_id
     };
-    wistorm_api._list('department', query_json, 'objectId,name,parentId,uid', 'name', 'name', 0, 0, 1, -1, auth_code, true, function(json){
-        var onCustomerAssignClick = function(event, treeId, treeNode){
-            if(parseInt(treeNode.id) > 100){
+    debugger;
+    wistorm_api._list('department', query_json, 'objectId,name,parentId,uid', 'name', 'name', 0, 0, 1, -1, auth_code, true, function (json) {
+        var onCustomerAssignClick = function (event, treeId, treeNode) {
+
+            if (parseInt(treeNode.id) > -1) {
                 assignDepartId = treeNode.id;
                 assignDepartName = treeNode.name;
             }
         };
 
         var settingAssign = {
-            view: {showIcon: true},
-            check: {enable: false, chkStyle: "checkbox"},
-            data: {simpleData: {enable: true}},
-            callback: {onClick: onCustomerAssignClick}
+            view: { showIcon: true },
+            check: { enable: false, chkStyle: "checkbox" },
+            data: { simpleData: { enable: true } },
+            callback: { onClick: onCustomerAssignClick }
         };
 
         var selectArray = [];
@@ -156,14 +181,14 @@ function getAllDepart() {
         // 创建三个分类的根节点
         for (var i = 0; i < json.data.length; i++) {
             // 如果为成员登陆，则加载本级及下级
-            if(['9', '12', '13'].indexOf(dealer_type) > -1){
-                if(json.data[i].objectId.toString() !== login_depart_id && json.data[i].parentId.toString() !== login_depart_id){
+            if (['9', '12', '13'].indexOf(dealer_type) > -1) {
+                if (json.data[i].objectId.toString() !== login_depart_id && json.data[i].parentId.toString() !== login_depart_id) {
                     continue;
                 }
             }
             departs[json.data[i].objectId.toString()] = json.data[i].name;
             var pId = dealer_id;
-            if(json.data[i]['parentId'] > 0){
+            if (json.data[i]['parentId'] > 0) {
                 pId = json.data[i]['parentId'];
             }
             selectArray.push({
@@ -188,7 +213,7 @@ function getAllDepart() {
         $.fn.zTree.init($("#departTreeAssign"), settingAssign, selectArray);
         var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         var root = treeObj.getNodeByParam("id", dealer_id, null);
-        if(root) {
+        if (root) {
             treeObj.addNodes(root, rootArray);
         }
     });
@@ -200,9 +225,9 @@ function deviceQuery() {
     var query_json = {
         uid: $.cookie('dealer_id')
     };
-    wistorm_api._list('_iotDevice', query_json, 'did', 'did', '-createdAt', 0, 0, 1, -1, auth_code, true, function(json){
+    wistorm_api._list('_iotDevice', query_json, 'did', 'did', '-createdAt', 0, 0, 1, -1, auth_code, true, function (json) {
         for (var i = 0; i < json.data.length; i++) {
-            if(!json.data[i].binded){
+            if (!json.data[i].binded) {
                 devices.push(json.data[i].did);
             }
         }
@@ -219,7 +244,7 @@ function customerQuery() {
     var dealer_id = $.cookie('dealer_id');
     var tree_path = $.cookie('tree_path');
     var key = '';
-    if($('#searchKey').val() !== ''){
+    if ($('#searchKey').val() !== '') {
         key = $('#searchKey').val().trim();
     }
     var page_no = 1;
@@ -232,12 +257,12 @@ function customerQuery() {
     // }, error:OnError };
     // ajax_function(searchObj);
     var query_json;
-    if(key !== ""){
+    if (key !== "") {
         query_json = {
             treePath: '^,' + dealer_id + ',',
             name: '^' + key
         };
-    }else{
+    } else {
         query_json = {
             // parentId: dealer_id
             treePath: '^,' + dealer_id + ','
@@ -254,7 +279,7 @@ var treeIcon = {
     '99': '/img/depart_icon.png'
 };
 
-var customerQuerySuccess = function(json) {
+var customerQuerySuccess = function (json) {
     var names = [];
     customers = json.data;
     if (json.data.length > 0) {
@@ -274,52 +299,52 @@ var customerQuerySuccess = function(json) {
         names.push(json.data[i].name);
     }
 
-    var onCustomerSelectClick = function(event, treeId, treeNode){
-//        alert(treeNode.tree_path);
-//         if(parseInt(treeNode.id) > 100){
-            uid = treeNode.id;
-            tree_path = treeNode.treePath;
-            selectNode = treeNode;
-            cust_id = treeNode.id;
-            $.cookie('uid', uid);
-            cust_name = treeNode.name;
-            $('#selCustName').html(cust_name);
-            vehicleQuery(uid, treeNode.isDepart);
+    var onCustomerSelectClick = function (event, treeId, treeNode) {
+        //        alert(treeNode.tree_path);
+        //         if(parseInt(treeNode.id) > 100){
+        uid = treeNode.id;
+        tree_path = treeNode.treePath;
+        selectNode = treeNode;
+        cust_id = treeNode.id;
+        $.cookie('uid', uid);
+        cust_name = treeNode.name;
+        $('#selCustName').html(cust_name);
+        vehicleQuery(uid, treeNode.isDepart);
         // }
     };
 
-    var onCustomerAssignClick = function(event, treeId, treeNode){
-//        alert(treeNode.tree_path);
-        if(parseInt(treeNode.id) > 100){
+    var onCustomerAssignClick = function (event, treeId, treeNode) {
+        //        alert(treeNode.tree_path);
+        if (parseInt(treeNode.id) > -1) {
             assignUid = treeNode.id;
             assignTreePath = treeNode.treePath;
             assignName = treeNode.name;
         }
     };
 
-    var onCustomerSelectDblClick = function(event, treeId, treeNode){
+    var onCustomerSelectDblClick = function (event, treeId, treeNode) {
         // var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         // if(treeNode.id !== $.cookie('dealer_id')){
         //     loadSubNode(treeObj, treeNode);
         // }
     };
 
-    var onCustomerAssignDblClick = function(event, treeId, treeNode){
+    var onCustomerAssignDblClick = function (event, treeId, treeNode) {
         // var treeObj = $.fn.zTree.getZTreeObj("customerTreeAssign");
         // loadSubNode(treeObj, treeNode);
     };
 
     var setting = {
-        view: {showIcon: true},
-        check: {enable: false, chkStyle: "checkbox"},
-        data: {simpleData: {enable: true}},
-        callback: {onClick: onCustomerSelectClick, onDblClick: onCustomerSelectDblClick}
+        view: { showIcon: true },
+        check: { enable: false, chkStyle: "checkbox" },
+        data: { simpleData: { enable: true } },
+        callback: { onClick: onCustomerSelectClick, onDblClick: onCustomerSelectDblClick }
     };
     var settingAssign = {
-        view: {showIcon: true},
-        check: {enable: false, chkStyle: "checkbox"},
-        data: {simpleData: {enable: true}},
-        callback: {onClick: onCustomerAssignClick, onDblClick: onCustomerAssignDblClick}
+        view: { showIcon: true },
+        check: { enable: false, chkStyle: "checkbox" },
+        data: { simpleData: { enable: true } },
+        callback: { onClick: onCustomerAssignClick, onDblClick: onCustomerAssignDblClick }
     };
 
     var customerArray = [];
@@ -411,8 +436,8 @@ var customerQuerySuccess = function(json) {
         // json.data[i]['pId'] = json.data[i]['custType'];
         // json.data[i]['name'] = json.data[i]['name'];
         // json.data[i]['icon'] = '/img/customer.png';
-        var childCount = json.data[i]['other'] ? (json.data[i]['other']['childCount'] || 0): 0;
-        var vehicleCount = json.data[i]['other'] ? (json.data[i]['other']['vehicleCount'] || 0): 0;
+        var childCount = json.data[i]['other'] ? (json.data[i]['other']['childCount'] || 0) : 0;
+        var vehicleCount = json.data[i]['other'] ? (json.data[i]['other']['vehicleCount'] || 0) : 0;
         customerArray.push({
             open: false,
             id: json.data[i]['uid'],
@@ -429,7 +454,7 @@ var customerQuerySuccess = function(json) {
             id: json.data[i]['uid'],
             treePath: json.data[i]['treePath'],
             pId: json.data[i]['parentId'][0],
-            name: json.data[i]['name']  + '(' + childCount + '/' + vehicleCount + ')',
+            name: json.data[i]['name'] + '(' + childCount + '/' + vehicleCount + ')',
             _name: json.data[i]['name'],
             childCount: childCount,
             vehicleCount: vehicleCount,
@@ -439,17 +464,17 @@ var customerQuerySuccess = function(json) {
     $.fn.zTree.init($("#customerTree"), setting, customerArray);
     $.fn.zTree.init($("#customerTreeAssign"), settingAssign, selectArray);
 
-    $('#customerKey').typeahead({source:names});
+    $('#customerKey').typeahead({ source: names });
 
-    if(uid > 0){
+    if (uid > 0) {
         var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         var node = treeObj.getNodeByParam("id", uid, null);
-        if(node){
+        if (node) {
             tree_path = node.treePath;
             cust_name = node.name;
             $('#selCustName').html(cust_name);
             treeObj.selectNode(node);
-        }else{
+        } else {
             uid = $.cookie('dealer_id');
             tree_path = $.cookie('tree_path');
             node = treeObj.getNodeByParam("id", uid, null);
@@ -458,7 +483,7 @@ var customerQuerySuccess = function(json) {
             $('#selCustName').html(cust_name);
             treeObj.selectNode(node);
         }
-        if(typeof vehicleQuery != "undefined"){
+        if (typeof vehicleQuery != "undefined") {
             vehicleQuery(uid, "");
         }
     }
@@ -470,7 +495,7 @@ function vehicleQuery(cust_id, is_depart) {
     // var page_no = 1;
     // var page_count = 1000;
     var key = '';
-    if($("#vehicleKey").val() !== ''){
+    if ($("#vehicleKey").val() !== '') {
         key = $("#vehicleKey").val().trim();
     }
     //
@@ -481,22 +506,22 @@ function vehicleQuery(cust_id, is_depart) {
     // }, error:OnError };
     // ajax_function(searchObj);
     var query_json;
-    if(key !== ""){
+    if (key !== "") {
         var searchType = $('#searchType').val();
-        if(is_depart){
+        if (is_depart) {
             query_json = {
                 departId: cust_id
             };
             query_json[searchType] = '^' + key;
-        }else if($('#allNode').is(':checked')){
+        } else if ($('#allNode').is(':checked')) {
             query_json = {
                 treePath: '^' + tree_path
             };
             setLoading("vehicle_list");
-            wistorm_api._list('customer', query_json, 'uid', 'uid', '-createdAt', 0, 0, 1, -1, auth_code, true, function(json){
+            wistorm_api._list('customer', query_json, 'uid', 'uid', '-createdAt', 0, 0, 1, -1, auth_code, true, function (json) {
                 var uids = [];
                 uids.push(uid.toString());
-                for(var i = 0; i < json.data.length; i++){
+                for (var i = 0; i < json.data.length; i++) {
                     uids.push(json.data[i].uid);
                 }
                 query_json = {
@@ -505,25 +530,25 @@ function vehicleQuery(cust_id, is_depart) {
                 query_json[searchType] = '^' + key;
                 wistorm_api._list('vehicle', query_json, 'objectId,uid,name,model,did,sim,serviceRegDate,serviceExpireIn,contact,tel', '-createdAt', '-createdAt', 0, 0, 1, -1, auth_code, true, vehicleQuerySuccess)
             });
-        }else{
+        } else {
             query_json = {
                 uid: cust_id
             };
             query_json[searchType] = '^' + key;
-            if(['9', '12', '13'].indexOf(dealer_type) > -1){
+            if (['9', '12', '13'].indexOf(dealer_type) > -1) {
                 query_json['departId'] = login_depart_id;
             }
         }
-    }else{
-        if(is_depart){
+    } else {
+        if (is_depart) {
             query_json = {
                 departId: cust_id
             };
-        }else{
+        } else {
             query_json = {
                 uid: cust_id
             };
-            if(['9', '12', '13'].indexOf(dealer_type) > -1){
+            if (['9', '12', '13'].indexOf(dealer_type) > -1) {
                 query_json['departId'] = login_depart_id;
             }
         }
@@ -534,7 +559,7 @@ function vehicleQuery(cust_id, is_depart) {
 
 var names = [];
 
-var vehicleQuerySuccess = function(json) {
+var vehicleQuerySuccess = function (json) {
     var j, _j, UnContacter, Uncontacter_tel;
     names = [];
     // if(json.status_code === 0 && selectNode && selectNode.id !== $.cookie('dealer_id')){
@@ -554,32 +579,33 @@ var vehicleQuerySuccess = function(json) {
     }
 
     var _columns = [
-        { "mData":"name", "sClass":"ms_left" },
-        { "mData":"did", "sClass":"center" },
+        { "mData": "name", "sClass": "ms_left" },
+        { "mData": "did", "sClass": "center" },
         // { "mData":"serial", "sClass":"center" },
-        { "mData":"sim", "sClass":"center" },
-        { "mData":"contact", "sClass":"center" },
-        { "mData":"tel", "sClass":"center" },
-        { "mData":"serviceRegDate", "sClass":"center"},
-        { "mData":"serviceExpireIn", "sClass":"center"},
-        { "mData":null, "sClass":"center", "bSortable":false, "fnRender":function (obj) {
-            return "<a href='#' title='编辑' data-i18n='[title]table.edit'><i class='icon-edit' obj_id='" + obj.aData.objectId + "' did='" + obj.aData.did + "'></i></a>&nbsp&nbsp<a href='#' title='更换用户' data-i18n='[title]table.change_parent'><i class='icon-retweet' obj_id='" + obj.aData.objectId + "' obj_name='" + obj.aData.name + "' did='" + obj.aData.did + "'></i></a>&nbsp&nbsp<a href='#' title='删除' data-i18n='[title]table.delete'><i class='icon-remove' obj_id='" +
-                obj.aData.objectId + "' obj_name='" + obj.aData.name + "' did='" + obj.aData.did + "'></i></a>";
-        }
+        { "mData": "sim", "sClass": "center" },
+        { "mData": "contact", "sClass": "center" },
+        { "mData": "tel", "sClass": "center" },
+        { "mData": "serviceRegDate", "sClass": "center" },
+        { "mData": "serviceExpireIn", "sClass": "center" },
+        {
+            "mData": null, "sClass": "center", "bSortable": false, "fnRender": function (obj) {
+                return "<a href='#' title='编辑' data-i18n='[title]table.edit'><i class='icon-edit' obj_id='" + obj.aData.objectId + "' did='" + obj.aData.did + "'></i></a>&nbsp&nbsp<a href='#' title='更换用户' data-i18n='[title]table.change_parent'><i class='icon-retweet' obj_id='" + obj.aData.objectId + "' obj_name='" + obj.aData.name + "' did='" + obj.aData.did + "'></i></a>&nbsp&nbsp<a href='#' title='删除' data-i18n='[title]table.delete'><i class='icon-remove' obj_id='" +
+                    obj.aData.objectId + "' obj_name='" + obj.aData.name + "' did='" + obj.aData.did + "'></i></a>";
+            }
         }
     ];
     var lang = i18next.language || 'en';
     var objTable = {
-        "bInfo":false,
-        "bLengthChange":false,
-        "bProcessing":true,
-        "bServerSide":false,
-        "bFilter":false,
-        "aaData":json.data,
-        "aoColumns":_columns,
-        "sDom":"<'row'r>t<'row'<'pull-right'p>>",
-        "sPaginationType":"bootstrap",
-        "oLanguage":{"sUrl":'css/' + lang + '.txt'}
+        "bInfo": false,
+        "bLengthChange": false,
+        "bProcessing": true,
+        "bServerSide": false,
+        "bFilter": false,
+        "aaData": json.data,
+        "aoColumns": _columns,
+        "sDom": "<'row'r>t<'row'<'pull-right'p>>",
+        "sPaginationType": "bootstrap",
+        "oLanguage": { "sUrl": 'css/' + lang + '.txt' }
     };
     //$('#vehicleKey').typeahead({source:names});
 
@@ -597,7 +623,7 @@ var vehicleQuerySuccess = function(json) {
         windowResize();
     }
 
-    if($("#vehicleKey").val() !== '' && json.data.length === 1){
+    if ($("#vehicleKey").val() !== '' && json.data.length === 1) {
         var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         var node = treeObj.getNodeByParam("id", json.data[0].uid, null);
         cust_name = node.name;
@@ -607,7 +633,7 @@ var vehicleQuerySuccess = function(json) {
 };
 
 var setVehicleTable = function (is_simple) {
-    if(vehicle_table){
+    if (vehicle_table) {
         if (is_simple) {
             vehicle_table.fnSetColumnVis(1, false);
             vehicle_table.fnSetColumnVis(2, false);
@@ -632,12 +658,12 @@ var updateDevice = function (did, update, callback) {
 };
 
 // 新增车辆
-var vehicleAdd = function(){
-    if(doing){
+var vehicleAdd = function () {
+    if (doing) {
         return;
     }
     doing = true;
-    if(uid === 0){
+    if (uid === 0) {
         _alert(i18next.t("system.select_customer"));
         return;
     }
@@ -661,7 +687,12 @@ var vehicleAdd = function(){
     var sim = $('#sim').val();                //SIM卡号
     var contact = $('#contact').val();
     var tel = $('#tel').val();
+    var desc = $('#vehicleType').val();
     var remark = $('#remark').val();
+    var inspectExpireIn = $('#inspectExpireIn').val();
+    var maintainMileage = $('#maintainMileage').val();
+    var maintainExpireIn = $('#maintainExpireIn').val();
+    var insuranceExpireIn = $('#insuranceExpireIn').val()
     var sim_type = 1;                      //SIM卡类型，保留
     var mobile_operator = "";              //运营商，保留
     var op_mobile = "";                    //主号，当前手机号，保留
@@ -692,19 +723,24 @@ var vehicleAdd = function(){
         departId: assignDepartId || '',
         contact: contact,
         tel: tel,
+        desc: desc,
+        maintainMileage: maintainMileage,
+        maintainExpireIn: maintainExpireIn,
+        insuranceExpireIn: insuranceExpireIn,
+        inspectExpireIn: inspectExpireIn,
         remark: remark,
         serviceRegDate: now.format('yyyy-MM-dd hh:mm:ss'),
-        serviceExpireIn: new Date(now.setFullYear(now.getFullYear()+1)).format('yyyy-MM-dd hh:mm:ss'),
+        serviceExpireIn: new Date(now.setFullYear(now.getFullYear() + 1)).format('yyyy-MM-dd hh:mm:ss'),
         brand: '',
         battery: '',
         color: ''
     };
-    wistorm_api._create('vehicle', create_json, auth_code, true, function(json){
-        if(json.status_code === 0){
+    wistorm_api._create('vehicle', create_json, auth_code, true, function (json) {
+        if (json.status_code === 0) {
             // 更新设置的vehicleId和vehicleName
             var uids = uid;
-            if(tree_path != ''){
-                uids = tree_path.split(',').filter(function(item){return item !== ''}).join('|');
+            if (tree_path != '' && tree_path) {
+                uids = tree_path.split(',').filter(function (item) { return item !== '' }).join('|');
             }
             var update = {
                 vehicleId: json.objectId,
@@ -713,9 +749,9 @@ var vehicleAdd = function(){
                 bindDate: now.format('yyyy-MM-dd hh:mm:ss'),
                 uid: '+' + uids
             };
-            updateDevice(device_id, update, function(dev){
-                if(dev.status_code === 0){
-                }else{
+            updateDevice(device_id, update, function (dev) {
+                if (dev.status_code === 0) {
+                } else {
                     console.log('Update device fail, please try again');
                 }
                 $("#divVehicle").dialog("close");
@@ -724,7 +760,7 @@ var vehicleAdd = function(){
                 updateVehicleCount(uid.toString());
                 vehicleQuery(uid, tree_path);
             });
-        }else{
+        } else {
             doing = false;
             _alert(i18next.t("vehicle.msg_add_fail"));
         }
@@ -752,7 +788,8 @@ var vehicleAdd = function(){
 // };
 
 // 修改车辆
-var vehicleEdit = function(){
+var vehicleEdit = function () {
+    debugger;
     var auth_code = $.cookie('auth_code');
     var obj_name = $('#obj_name').val();             //车牌号码
     var annual_inspect_alert = 0;          //只针对手机客户端，是否年检提醒
@@ -774,7 +811,13 @@ var vehicleEdit = function(){
     var sim = $('#sim').val();                //SIM卡号
     var contact = $('#contact').val();
     var tel = $('#tel').val();
+    var desc = $('#vehicleType').val();
     var remark = $('#remark').val();
+    var inspectExpireIn = $('#inspectExpireIn').val();
+    var maintainMileage = $('#maintainMileage').val();
+    var maintainExpireIn = $('#maintainExpireIn').val();
+    var insuranceExpireIn = $('#insuranceExpireIn').val()
+    // var 
     var sim_type = 1;                      //SIM卡类型，保留
     var mobile_operator = "";              //运营商，保留
     var op_mobile = "";                    //主号，当前手机号，保留
@@ -805,13 +848,18 @@ var vehicleEdit = function(){
         sim: sim,
         contact: contact,
         tel: tel,
-        remark: remark
+        desc: desc,
+        remark: remark,
+        maintainMileage: maintainMileage,
+        maintainExpireIn: maintainExpireIn,
+        insuranceExpireIn: insuranceExpireIn,
+        inspectExpireIn: inspectExpireIn,
     };
-    wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function(json){
-        if(json.status_code == 0){
+    wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function (json) {
+        if (json.status_code == 0) {
             $("#divVehicle").dialog("close");
             vehicleQuery(uid, tree_path);
-            if(did !== device_id){
+            if (did !== device_id) {
                 // 解绑原有的终端ID
                 var update = {
                     vehicleId: '',
@@ -819,16 +867,16 @@ var vehicleEdit = function(){
                     binded: false,
                     uid: '-' + uid
                 };
-                updateDevice(did, update, function(dev){
-                    if(dev.status_code == 0){
-                    }else{
+                updateDevice(did, update, function (dev) {
+                    if (dev.status_code == 0) {
+                    } else {
                         console.log('Unbind device fail, pls try again');
                     }
                 });
             }
             var uids = uid;
-            if(tree_path != ''){
-                uids = tree_path.split(',').filter(function(item){return item !== ''}).join('|');
+            if (tree_path != '' && tree_path) {
+                uids = tree_path.split(',').filter(function (item) { return item !== '' }).join('|');
             }
             // 更新设置的vehicleId和vehicleName
             var now = new Date();
@@ -839,13 +887,13 @@ var vehicleEdit = function(){
                 bindDate: now.format('yyyy-MM-dd hh:mm:ss'),
                 uid: '+' + uids
             };
-            updateDevice(device_id, update, function(dev){
-                if(dev.status_code == 0){
-                }else{
+            updateDevice(device_id, update, function (dev) {
+                if (dev.status_code == 0) {
+                } else {
                     console.log('Update device fail, please try again');
                 }
             });
-        }else{
+        } else {
             _alert(i18next.t("vehicle.msg_save_fail"));
         }
     });
@@ -861,7 +909,7 @@ var vehicleEdit = function(){
 // };
 
 // 新增车辆
-var vehicleDelete = function(obj_id, device_id){
+var vehicleDelete = function (obj_id, device_id) {
     // var auth_code = $.cookie('auth_code');
     //
     // var sendUrl = $.cookie('Host') + "vehicle/" + obj_id + "?access_token=" + auth_code;
@@ -875,8 +923,9 @@ var vehicleDelete = function(obj_id, device_id){
     var query_json = {
         objectId: obj_id
     };
-    wistorm_api._delete('vehicle', query_json, auth_code, true, function(json){
-        if(json.status_code == 0){
+
+    wistorm_api._delete('vehicle', query_json, auth_code, true, function (json) {
+        if (json.status_code == 0) {
             // 更新设置的vehicleId和vehicleName
             var update = {
                 vehicleId: '',
@@ -884,16 +933,16 @@ var vehicleDelete = function(obj_id, device_id){
                 binded: false,
                 uid: '-' + uid
             };
-            updateDevice(device_id, update, function(dev){
-                if(dev.status_code == 0){
-                }else{
+            updateDevice(device_id, update, function (dev) {
+                if (dev.status_code == 0) {
+                } else {
                     console.log('Update device fail, please try again');
                 }
             });
             // 更新用户车辆数
             updateVehicleCount(uid.toString());
             vehicleQuery(uid, tree_path);
-        }else{
+        } else {
             _alert(i18next.t("vehicle.msg_delete_fail"));
         }
     });
@@ -909,24 +958,24 @@ var vehicleDelete = function(obj_id, device_id){
 // };
 
 // 车辆更换所属用户
-var vehicleChangeCustomer = function(obj_id, change_cust_id, device_id){
+var vehicleChangeCustomer = function (obj_id, change_cust_id, device_id) {
     var query_json = {
         objectId: obj_id
     };
     var update_json = {
         uid: change_cust_id
     };
-    wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function(json){
-        if(json.status_code === 0){
+    wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function (json) {
+        if (json.status_code === 0) {
             // 更新设置的vehicleId和vehicleName
             var update = {
                 uid: '+' + change_cust_id
             };
-            updateDevice(device_id, update, function(dev){
+            updateDevice(device_id, update, function (dev) {
                 $("#divCustomerAssign").dialog("close");
-                if(dev.status_code === 0){
+                if (dev.status_code === 0) {
                     vehicleQuery(uid, tree_path);
-                }else{
+                } else {
                     // _alert('更新设备所属失败');
                 }
                 // 更新用户车辆数
@@ -934,7 +983,7 @@ var vehicleChangeCustomer = function(obj_id, change_cust_id, device_id){
                 updateVehicleCount(assignUid.toString());
                 vehicleQuery(uid, tree_path);
             });
-        }else{
+        } else {
             _alert(i18next.t("vehicle.err_change_parent"));
         }
     });
@@ -960,8 +1009,26 @@ $(document).ready(function () {
         windowResize();
     });
 
-    var id = setInterval(function(){
-        if(!i18nextLoaded){
+    var id = setInterval(function () {
+        var dateOption = {
+            language: $.cookie("lang"),
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            showMeridian: 1,
+            minView: 2
+        }
+        $('.insuranceExpireIn').datetimepicker(dateOption);
+        $('#insuranceExpireIn').val(new Date().format('yyyy-MM-dd'));
+        $('.maintainExpireIn').datetimepicker(dateOption);
+        $('#maintainExpireIn').val(new Date().format('yyyy-MM-dd'));
+        $('.inspectExpireIn').datetimepicker(dateOption);
+        $('#inspectExpireIn').val(new Date().format('yyyy-MM-dd'));
+
+        if (!i18nextLoaded) {
             return;
         }
 
@@ -969,7 +1036,7 @@ $(document).ready(function () {
             obj_id = parseInt($(this).attr("obj_id"));
             obj_name = $(this).attr("obj_name");
             did = $(this).attr("did");
-            if (CloseConfirm(i18next.t("vehicle.msg_confirm_delete", {name: obj_name}))) {
+            if (CloseConfirm(i18next.t("vehicle.msg_confirm_delete", { name: obj_name }))) {
                 vehicleDelete(obj_id, did);
             }
         });
@@ -1019,17 +1086,17 @@ $(document).ready(function () {
             vehicleQuery(uid, tree_path);
         });
 
-        $('#searchKey').keydown(function(e){
+        $('#searchKey').keydown(function (e) {
             var curKey = e.which;
-            if(curKey == 13){
+            if (curKey == 13) {
                 customerQuery();
                 return false;
             }
         });
 
-        $('#vehicleKey').keydown(function(e){
+        $('#vehicleKey').keydown(function (e) {
             var curKey = e.which;
-            if(curKey == 13){
+            if (curKey == 13) {
                 vehicleQuery(uid, tree_path);
                 return false;
             }
@@ -1044,11 +1111,11 @@ $(document).ready(function () {
             var update_json = {
                 did: device_id.trim()
             };
-            wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function(json){
-                if(json.status_code == 0){
+            wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function (json) {
+                if (json.status_code == 0) {
                     var uids = uid;
-                    if(tree_path != ''){
-                        uids = tree_path.split(',').filter(function(item){return item !== ''}).join('|');
+                    if (tree_path != '' && tree_path) {
+                        uids = tree_path.split(',').filter(function (item) { return item !== '' }).join('|');
                     }
                     // 更新设置的vehicleId和vehicleName
                     var now = new Date();
@@ -1059,25 +1126,25 @@ $(document).ready(function () {
                         bindDate: now.format('yyyy-MM-dd hh:mm:ss'),
                         uid: '+' + uids
                     };
-                    updateDevice(device_id, update, function(dev){
-                        if(dev.status_code == 0){
+                    updateDevice(device_id, update, function (dev) {
+                        if (dev.status_code == 0) {
                             _ok(i18next.t("vehicle.msg_bind_success"));
-                            $('#device_id').attr("disabled","disabled");
-                            $('#bind').css("display","none");
-                            $('#unbind').css("display","inline-block");
+                            $('#device_id').attr("disabled", "disabled");
+                            $('#bind').css("display", "none");
+                            $('#unbind').css("display", "inline-block");
                             vehicleQuery(uid, tree_path);
-                        }else{
+                        } else {
                             _alert(i18next.t("vehicle.msg_bind_fail"), 2);
                         }
                     });
-                }else{
+                } else {
                     _alert(i18next.t("vehicle.msg_bind_fail"), 2);
                 }
             });
         });
 
         $("#unbind").click(function () {
-            if(!CloseConfirm(i18next.t("vehicle.msg_confirm_unbind"))){
+            if (!CloseConfirm(i18next.t("vehicle.msg_confirm_unbind"))) {
                 return;
             }
             var device_id = $('#device_id').val();     //终端ID
@@ -1087,8 +1154,8 @@ $(document).ready(function () {
             var update_json = {
                 did: ''
             };
-            wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function(json){
-                if(json.status_code == 0){
+            wistorm_api._update('vehicle', query_json, update_json, auth_code, true, function (json) {
+                if (json.status_code == 0) {
                     // 更新设置的vehicleId和vehicleName
                     var update = {
                         vehicleId: '',
@@ -1096,34 +1163,34 @@ $(document).ready(function () {
                         binded: false,
                         uid: '-' + uid
                     };
-                    updateDevice(device_id, update, function(dev){
-                        if(dev.status_code == 0){
+                    updateDevice(device_id, update, function (dev) {
+                        if (dev.status_code == 0) {
                             _ok(i18next.t("vehicle.msg_unbind_success"));
                             $('#device_id').val('');
                             $('#device_id').removeAttr("disabled");
-                            $('#bind').css("display","inline-block");
-                            $('#unbind').css("display","none");
+                            $('#bind').css("display", "inline-block");
+                            $('#unbind').css("display", "none");
                             vehicleQuery(uid, tree_path);
-                        }else{
+                        } else {
                             _alert(i18next.t("vehicle.msg_unbind_fail"), 2);
                         }
                     });
-                }else{
+                } else {
                     _alert(i18next.t("vehicle.msg_unbind_fail"), 2);
                 }
             });
         });
 
         $("#addVehicle").click(function () {
-            if(uid == 0){
+            if (uid == 0) {
                 _alert(i18next.t("system.select_customer"));
                 return;
             }
             var service_end_date = new Date();
             service_end_date = new Date(Date.parse(service_end_date) + (86400000 * 31));
             service_end_date = service_end_date.format("yyyy-MM-dd");
-            var title = i18next.t("vehicle.add_vehicle", {cust_name: cust_name});
-            initFrmVehicle(title, 1, "", "", "", "", service_end_date);
+            var title = i18next.t("vehicle.add_vehicle", { cust_name: cust_name });
+            initFrmVehicle(title, 1, "", "", "", "", "", "", "", "", service_end_date);
             validator_vehicle.resetForm();
             $("#divVehicle").dialog("open");
         });
@@ -1137,9 +1204,9 @@ $(document).ready(function () {
         };
         // 更换所属用户窗口
         $('#divCustomerList').dialog({
-            autoOpen:false,
-            width:650,
-            buttons:buttons
+            autoOpen: false,
+            width: 650,
+            buttons: buttons
         });
 
         $('#frmCustomerList').submit(function () {
@@ -1160,16 +1227,17 @@ $(document).ready(function () {
         };
         // Dialog Simple
         $('#divVehicle').dialog({
-            autoOpen:false,
-            width:650,
-            buttons:buttons
+            autoOpen: false,
+            width: 650,
+            buttons: buttons
         });
 
         $('#frmVehicle').submit(function () {
+            debugger;
             if ($('#frmVehicle').valid()) {
-                if(vehicle_flag == 1){
+                if (vehicle_flag == 1) {
                     vehicleAdd();
-                }else{
+                } else {
                     vehicleEdit();
                 }
             }
@@ -1184,15 +1252,15 @@ $(document).ready(function () {
             $(this).dialog("close");
         };
         $('#divCustomerAssign').dialog({
-            autoOpen:false,
-            width:480,
-            buttons:buttons
+            autoOpen: false,
+            width: 480,
+            buttons: buttons
         });
 
         $('#frmCustomerAssign').submit(function () {
-            var msg = i18next.t("vehicle.msg_change_parent", {name: obj_name, assignName: assignName}); // '你确定将车辆[' + obj_name + ']的用户更换为[' + assignName + ']吗?';
-            if(assignUid === $.cookie('dealer_id')){
-                msg = i18next.t("vehicle.msg_restore_parent", {name: obj_name}); // '你确定将车辆[' + obj_name + ']恢复到上级用户进行管理吗?';
+            var msg = i18next.t("vehicle.msg_change_parent", { name: obj_name, assignName: assignName }); // '你确定将车辆[' + obj_name + ']的用户更换为[' + assignName + ']吗?';
+            if (assignUid === $.cookie('dealer_id')) {
+                msg = i18next.t("vehicle.msg_restore_parent", { name: obj_name }); // '你确定将车辆[' + obj_name + ']恢复到上级用户进行管理吗?';
             }
             if (CloseConfirm(msg)) {
                 vehicleChangeCustomer(obj_id, assignUid, did);
@@ -1224,89 +1292,67 @@ $(document).ready(function () {
             $("#divDepartAssign").dialog("option", "title", title);
             $("#divDepartAssign").dialog("open");
         });
-
+        //为表单提供了强大的验证功能
         validator_vehicle = $('#frmVehicle').validate(
             {
-                rules:{
-                    obj_name:{
-                        minlength:4,
-                        required:true,
-                        remote:{
-                            url:"/exists", //后台处理程序
-                            type:"get", //数据发送方式
-                            dataType:"json", //接受数据格式
-                            data:{
-                                auth_code:function () {
+                rules: {
+                    obj_name: {
+                        minlength: 4,
+                        required: true,
+                        remote: {
+                            url: "/exists", //后台处理程序
+                            type: "get", //数据发送方式
+                            dataType: "json", //接受数据格式
+                            data: {
+                                auth_code: function () {
                                     return $.cookie('auth_code');
                                 },
-                                query_type:function () {
+                                query_type: function () {
                                     return 4;
                                 },
-                                value:function () {
+                                value: function () {
                                     return $('#obj_name').val();
                                 },
-                                old_value:function(){
+                                old_value: function () {
                                     return edit_obj_name;
                                 }
                             }
                         }
                     },
-                    device_id:{
-                        minlength:6,
-                        required:true,
-                        remote:{
-                            url:"exists", //后台处理程序
-                            type:"get", //数据发送方式
-                            dataType:"json", //接受数据格式
-                            data:{
-                                auth_code:function () {
+                    device_id: {
+                        minlength: 6,
+                        required: true,
+                        remote: {
+                            url: "exists", //后台处理程序
+                            type: "get", //数据发送方式
+                            dataType: "json", //接受数据格式
+                            data: {
+                                auth_code: function () {
                                     return $.cookie('auth_code');
                                 },
-                                query_type:function () {
+                                query_type: function () {
                                     return 2;
                                 },
-                                value:function () {
+                                value: function () {
                                     return $('#device_id').val();
                                 },
-                                uid: function(){
+                                uid: function () {
                                     return $.cookie('dealer_id');
                                 }
                             }
                         }
                     },
-                    sim:{
-                        rangelength:[11, 13],
-                        required:true,
-                        remote:{
-                            url:"exists", //后台处理程序
-                            type:"get", //数据发送方式
-                            dataType:"json", //接受数据格式
-                            data:{
-                                auth_code:function () {
-                                    return $.cookie('auth_code');
-                                },
-                                query_type:function () {
-                                    return 1;
-                                },
-                                value:function () {
-                                    return $('#sim').val();
-                                },
-                                old_value: function(){
-                                    return edit_sim;
-                                }
-                            }
-                        }
-                    }
+
                 },
-                messages:{
-                    obj_name:{minlength:i18next.t("vehicle.name_minlength"), required:i18next.t("vehicle.name_required"), remote:i18next.t("vehicle.name_remote")},
-                    device_id:{minlength:i18next.t("vehicle.id_minlength"), required:i18next.t("vehicle.id_required"), remote:i18next.t("vehicle.id_remote")},
-                    sim:{rangelength:i18next.t("vehicle.sim_rangelength"), required:i18next.t("vehicle.sim_required"), remote:i18next.t("vehicle.sim_remote")}
+                messages: {
+                    obj_name: { minlength: i18next.t("vehicle.name_minlength"), required: i18next.t("vehicle.name_required"), remote: i18next.t("vehicle.name_remote") },
+                    device_id: { minlength: i18next.t("vehicle.id_minlength"), required: i18next.t("vehicle.id_required"), remote: i18next.t("vehicle.id_remote") },
+                    sim: { rangelength: i18next.t("vehicle.sim_rangelength"), required: i18next.t("vehicle.sim_required"), remote: i18next.t("vehicle.sim_remote") }
                 },
-                highlight:function (element) {
+                highlight: function (element) {
                     $(element).closest('.control-group').removeClass('success').addClass('error');
                 },
-                success:function (element) {
+                success: function (element) {
                     element
                         .text('OK!').addClass('valid')
                         .closest('.control-group').removeClass('error').addClass('success');

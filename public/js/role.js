@@ -12,12 +12,13 @@ var _table;
 var _id = "";
 var auth_code = $.cookie('auth_code');
 var allPage = [];
+var allFeature = [];
 
 // 获取登陆用户的权限
 function getPage() {
     var searchUrl = "/getPage";
     var searchData = {};
-    var searchObj = { type:"GET", url:searchUrl, data:searchData, success:function (groups) {
+    var searchObj = { type:"GET", url:searchUrl, data:searchData, success:function (json) {
         var setting = {
             view: {showIcon: true},
             check: {enable: true, chkStyle: "checkbox"},
@@ -25,6 +26,8 @@ function getPage() {
             callback: {}
         };
 
+        var groups = json.groups;
+        var features = json.features;
         var pageArray = [];
         pageArray.push({
             open: true,
@@ -40,6 +43,7 @@ function getPage() {
                 open: true,
                 id: i,
                 pId: -1,
+                type: 0,
                 name: groups[i]['name'],
                 icon: '/img/group.png'
             });
@@ -47,12 +51,24 @@ function getPage() {
                 pageArray.push({
                     open: true,
                     pId: i,
+                    type: 1,
                     id: groups[i].pages[j]['id'],
                     name: groups[i].pages[j]['name'],
                     icon: '/img/right.png'
                 });
                 allPage.push(groups[i].pages[j]['id']);
             }
+        }
+        for (var i = 0; i < features.length; i++){
+            pageArray.push({
+                open: false,
+                pId: features[i]['pageId'],
+                type: 2,
+                id: features[i]['objectId'],
+                name: features[i]['name'],
+                icon: '/img/right.png'
+            });
+            allFeature.push(features[i]['objectId']);
         }
         $.fn.zTree.init($("#pageTree"), setting, pageArray);
     }, error:OnError };
@@ -83,8 +99,16 @@ var infoSuccess = function (json) {
         var pageTree = $.fn.zTree.getZTreeObj("pageTree");
         for(var i = 0; i < json.total; i++){
             var node = pageTree.getNodeByParam("id", json.data[i].objectId, null);
-            pageTree.checkNode(node, true, true);
+            if(!node.children){
+                pageTree.checkNode(node, true, true);
+            }
         }
+        wistorm_api._list('feature', query_json, 'objectId', 'name', 'name', 0, 0, 1, -1, auth_code, false, function(json) {
+            for(var i = 0; i < json.total; i++){
+                var node = pageTree.getNodeByParam("id", json.data[i].objectId, null);
+                pageTree.checkNode(node, true, true);
+            }
+        });
         $("#divRole").dialog("open");
     });
 };
@@ -198,9 +222,12 @@ var _add = function () {
             var pageTree = $.fn.zTree.getZTreeObj("pageTree");
             var nodes = pageTree.getCheckedNodes(true);
             var pages = [];
+            var features = [];
             for( var i = 0; i < nodes.length; i++){
-                if(nodes[i].id > 3){
+                if(nodes[i].type === 1){
                     pages.push(nodes[i].id);
+                }else if(nodes[i].type === 2){
+                    features.push(nodes[i].id);
                 }
             }
             var query_json = {
@@ -209,7 +236,16 @@ var _add = function () {
             var update_json = {
                ACL: '%2Brole:' + json.objectId
             };
-            wistorm_api._update('page', query_json, update_json, auth_code, false, addSuccess);
+            wistorm_api._update('page', query_json, update_json, auth_code, false, function(json){
+                if(json.status_code === 0){
+                    query_json = {
+                        objectId: features.join("|")
+                    };
+                    wistorm_api._update('feature', query_json, update_json, auth_code, false, addSuccess);
+                }else{
+                    _alert(i18next.t("role.msg_add_fail"));
+                }
+            });
         }
     });
 };
@@ -240,9 +276,12 @@ var _edit = function () {
             var pageTree = $.fn.zTree.getZTreeObj("pageTree");
             var nodes = pageTree.getCheckedNodes(true);
             var pages = [];
+            var features = [];
             for( var i = 0; i < nodes.length; i++){
-                if(nodes[i].id > 3){
+                if(nodes[i].type === 1){
                     pages.push(nodes[i].id);
+                }else if(nodes[i].type === 2){
+                    features.push(nodes[i].id);
                 }
             }
 
@@ -260,7 +299,28 @@ var _edit = function () {
                 update_json = {
                     ACL: '%2Brole:' + _id
                 };
-                wistorm_api._update('page', query_json, update_json, auth_code, false, editSuccess);
+                wistorm_api._update('page', query_json, update_json, auth_code, false, function(json){
+                    if(json.status_code === 0){
+                        var query_json = {
+                            objectId: allFeature.join("|")
+                        };
+
+                        var update_json = {
+                            ACL: '-role:' + _id
+                        };
+                        wistorm_api._update('feature', query_json, update_json, auth_code, false, function(obj) {
+                            query_json = {
+                                objectId: features.join("|")
+                            };
+                            update_json = {
+                                ACL: '%2Brole:' + _id
+                            };
+                            wistorm_api._update('feature', query_json, update_json, auth_code, false, editSuccess);
+                        });
+                    }else{
+                        _alert(i18next.t("role.msg_edit_fail"));
+                    }
+                });
             });
         }
     });

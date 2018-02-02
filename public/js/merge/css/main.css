@@ -24,6 +24,9 @@ body {
 .m_t0 {
     margin-top: 0
 }
+.m_b10 {
+    margin-bottom: 10px
+}
 .f14 {
     font-size: 14px;
 }
@@ -32,6 +35,9 @@ body {
 }
 .f12 {
     font-size: 12px;
+}
+.w_p80 {
+    width: 80%;
 }
 .t_a_r {
     text-align: right;
@@ -89,9 +95,9 @@ check::before,check::after{
     width:100%
 }
 .great{
-    color: #78ef78;
+    color: #3983cf;
     background: #fff;
-    border: 1px solid #78ef78;
+    border: 1px solid #3983cf;
     border-radius: 0;
     font-weight: 100
 }
@@ -188,11 +194,7 @@ check::before,check::after{
     font-weight: 900;
     color: #2f7dcd;
 }
-.label_input {
-    margin-right: 5px;
-    position: relative;
-    top: 2px;
-}
+
 .weui-tab1 {
     position: relative;
     height: 100%;
@@ -242,13 +244,13 @@ check::before,check::after{
     padding-top: 50px;
     padding-bottom: 0;
 }
-.weui-tab__panel {
+/* .weui-tab__panel {
     box-sizing: border-box;
     height: 100%;
     padding-bottom: 50px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-}
+} */
 
 
 .weui-tab2 {
@@ -300,13 +302,64 @@ check::before,check::after{
     padding-top: 50px;
     padding-bottom: 0;
 }
-.weui-tab__panel {
+/* .weui-tab__panel {
     box-sizing: border-box;
     height: 100%;
     padding-bottom: 50px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+} */
+
+.weui-tab3 {
+    position: relative;
+    height: 100%;
 }
+.weui-navbar3 {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    position: absolute;
+    z-index: 500;
+    top: 0;
+    width: 100%;
+    background-color: #FAFAFA;
+}
+.weui-navbar3:after {
+    content: " ";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 1px solid #CCCCCC;
+    color: #CCCCCC;
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+}
+.weui-navbar__item3 {
+    position: relative;
+    display: block;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 13px 0;
+    text-align: center;
+    font-size: 15px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.weui-navbar__item3.weui-bar__item_on {
+    background-color: #EAEAEA;
+}
+.weui-tab__content3 {
+    display: none;
+}
+.weui-navbar3 + .weui-tab__panel {
+    padding-top: 50px;
+    padding-bottom: 0;
+}
+
 
 
 
@@ -340,6 +393,15 @@ check::before,check::after{
 .p_r {
     position: relative
 }
+.d_i_b {
+    display: inline-block;
+}
+.m_r20 {
+    margin-right: 20px
+}
+.m_r10 {
+    margin-right: 10px;
+}
 .slh {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -364,47 +426,26 @@ check::before,check::after{
    
 
 }
-@media screen and (max-width: 979px) and (min-width: 768px){
-    .row {
-        margin-left: 0;
-    }
-}
-.row {
-    margin-left: 0px;
-}
-
-@media screen and (min-width: 1200px) {
-    .container_1 {
-        width:100%;
-    }
-    .container {
-        width:100%;
-    }
-    .row {
-        margin-left: 0
-    }
-}
 .container_1 {
     padding: 0
 }
-#table_info th {
-    font-weight: normal;
-}
 .apply_back{
-    position: absolute;
-    top: 30%;
-    left: 20%;
-    font-size: 24px !important;
+    display: inline-block;
+    /* height: 100%; */
+    /* width: 94%; */
+    font-size: 30px !important;
     text-align: center;
-    color: rgb(158, 154, 154);
+    color: #000;
+    position: absolute;
+    top: 3px;
+    left: 10px;
 }
 
 .apply2_detail {
-    line-height:30px;text-align:right;background-color:#f5f5f5;padding-right: 5px;
-    border-right: 1px solid #eeeeee
+    line-height:30px;text-align:right;background-color:#219ecf;padding-right: 5px
 }
 .apply2_detail1 {
-    line-height:30px;background-color:#fff;padding-left: 20px
+    line-height:30px;background-color:#ccc;padding-left: 20px
 }
 .flex4 {
     flex: 4;
@@ -413,11 +454,9 @@ check::before,check::after{
     flex: 8;
 }
 .tr_b_b {
-    background: #ccc;
+    background: #219ecf;
 }
-.tr_b_b1 {
-    background: #F5F5F4;
-}
+
 * {
     padding: 0;
     margin: 0;
@@ -481,4 +520,23 @@ check::before,check::after{
 .totalSize span {
     color: #0073A9;
     margin: 0 5px;
+}
+.weui_cell_replace {
+    padding: 10px 15px;
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+._select {
+    width: 100px;
+    margin-bottom: 0
+}
+._select:focus {
+    outline:0px;
+    
+
 }

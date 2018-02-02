@@ -2,6 +2,7 @@ $(document).ready(function () {
     // console.log(W.getSearch())
     var _g = W.getSearch();
     var _user = JSON.parse(localStorage.getItem('user'));
+    W.setCookie('types', _g.type)
     var car = '';
     var driver = '';
     function getJson(url, callback, option, type) {
@@ -382,7 +383,7 @@ $(document).ready(function () {
                 // top.location
                 sendmessage(_res.apply[0].aid, _res.apply[0].userid, username, '还车成功')
 
-            }, { etm: etm, id: res.apply[0].aid, sp_status: 6})
+            }, { etm: etm, id: res.apply[0].aid, sp_status: 6 })
         })
 
         $('#carlist_back').on('click', function () {

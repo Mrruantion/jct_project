@@ -11,6 +11,7 @@ var auth_code = $.cookie('auth_code');
 var dealer_id = $.cookie('dealer_id');
 var dealer_name = $.cookie('name');
 var cust_id = 0;
+var user_id = 0;
 var depart_id = 0;
 var tree_path = '';
 var customer_table;
@@ -30,7 +31,7 @@ var login_depart_id = $.cookie('login_depart_id');
 
 function windowResize() {
     var height = $(window).height() - 122;
-    $('#customerTree').css({"height": height + "px"});
+    $('#customerTree').css({ "height": height + "px" });
 }
 
 // 获取登陆用户的权限
@@ -40,9 +41,9 @@ var initRole = function () {
         uid: dealerId
     };
     $('#roleId').innerHTML = '';
-    wistorm_api._list('role', query_json, 'objectId,name,remark,createdAt', '-createdAt', '-createdAt', 0, 0, 1, -1, auth_code, false, function(roles){
-        if(roles.status_code == 0 && roles.total > 0){
-            for(var i = 0; i < roles.total; i++){
+    wistorm_api._list('role', query_json, 'objectId,name,remark,createdAt', '-createdAt', '-createdAt', 0, 0, 1, -1, auth_code, false, function (roles) {
+        if (roles.status_code == 0 && roles.total > 0) {
+            for (var i = 0; i < roles.total; i++) {
                 var option = document.createElement('option');
                 option.value = roles.data[i].objectId;
                 option.innerText = roles.data[i].name;
@@ -52,41 +53,41 @@ var initRole = function () {
     });
 };
 
-var setRole = function(uid, roleId, callback){
+var setRole = function (uid, roleId, callback) {
     var query_json = {
         users: uid.toString()
     };
     var update_json = {
         users: "-" + uid.toString()
     };
-    wistorm_api._update("role", query_json, update_json, auth_code, false, function(obj) {
+    wistorm_api._update("role", query_json, update_json, auth_code, false, function (obj) {
         query_json = {
             objectId: parseInt(roleId)
         };
         update_json = {
             users: "%2B" + uid
         };
-        wistorm_api._update("role", query_json, update_json, auth_code, false, function(obj) {
+        wistorm_api._update("role", query_json, update_json, auth_code, false, function (obj) {
             callback(obj);
         });
     });
 };
 
-var getRole = function(uid, callback){
+var getRole = function (uid, callback) {
     var query_json = {
         users: uid.toString()
     };
     wistorm_api._get("role", query_json, "objectId", auth_code, false, function (obj) {
-        if(obj.status_code == 0 && obj.data != null){
+        if (obj.status_code == 0 && obj.data != null) {
             callback(obj.data.objectId);
-        }else{
+        } else {
             callback('');
         }
     })
 };
 
 // 车辆更换所属用户
-var customerChangeParent = function(obj_id, change_cust_id){
+var customerChangeParent = function (obj_id, change_cust_id) {
     var query_json = {
         objectId: obj_id
     };
@@ -96,11 +97,11 @@ var customerChangeParent = function(obj_id, change_cust_id){
     wistorm_api._update('employee', query_json, update_json, auth_code, true, ChangeParentSuccess);
 };
 
-var ChangeParentSuccess = function(json) {
-    if(json.status_code === 0){
+var ChangeParentSuccess = function (json) {
+    if (json.status_code === 0) {
         $("#divDepartAssign").dialog("close");
         getAllEmployee(depart_id);
-    }else{
+    } else {
         _alert(i18next.t("employee.err_change_parent"));
     }
 };
@@ -113,8 +114,8 @@ $(document).ready(function () {
         windowResize();
     });
 
-    var id = setInterval(function(){
-        if(!i18nextLoaded){
+    var id = setInterval(function () {
+        if (!i18nextLoaded) {
             return;
         }
 
@@ -144,13 +145,14 @@ $(document).ready(function () {
         });
 
         $('#frmDepartAssign').submit(function () {
-            var msg = i18next.t("employee.msg_change_parent", {cust_name: cust_name, assignName: assignName}); //'你确定将用户[' + cust_name + ']的上级用户更换为[' + assignName + ']吗?';
+            debugger;
+            var msg = i18next.t("employee.msg_change_parent", { cust_name: cust_name, assignName: assignName }); //'你确定将用户[' + cust_name + ']的上级用户更换为[' + assignName + ']吗?';
             if (CloseConfirm(msg)) {
                 // customerAssign();
                 customerChangeParent(cust_id, assignUid);
             }
             return false;
-        });        
+        });
 
         $(document).on("click", "#customer_list .icon-retweet", function () {
             cust_id = parseInt($(this).attr("cust_id"));
@@ -165,17 +167,17 @@ $(document).ready(function () {
             customerInfo(cust_id);
         });
 
-        $('#searchKey').keydown(function(e){
+        $('#searchKey').keydown(function (e) {
             var curKey = e.which;
-            if(curKey == 13){
+            if (curKey == 13) {
                 customerQuery();
                 return false;
             }
         });
 
-        $('#customerKey').keydown(function(e){
+        $('#customerKey').keydown(function (e) {
             var curKey = e.which;
-            if(curKey == 13){
+            if (curKey == 13) {
                 getAllEmployee(depart_id);
                 return false;
             }
@@ -183,7 +185,7 @@ $(document).ready(function () {
 
         $("#addCustomer").click(function () {
             var title = i18next.t("employee.add_employee");
-            initFrmEmployee(title, 1, "", "", "", "", "", "", "9", [], false, false, "", 0);
+            initFrmEmployee(title, 1, "", "", "", "", "", "", "", "9", [], false, false, "", 0);
             _validator.resetForm();
             $("#divEmployee").dialog("open");
         });
@@ -280,12 +282,12 @@ $(document).ready(function () {
                     }
                 },
                 messages: {
-                    username: {minlength: i18next.t("customer.username_minlength"), required: i18next.t("customer.username_required"), remote: i18next.t("customer.username_remote")},
-                    password: {minlength: i18next.t("customer.password_minlength"), required: i18next.t("customer.password_required")},
-                    password2: {required: i18next.t("customer.password2_required"), minlength: i18next.t("customer.password2_minlength"), equalTo: i18next.t("customer.password2_equalTo")},
-                    employee_name: {required: i18next.t("depart.depart_name_required"), remote: i18next.t("depart.depart_name_remote")},
-                    roleId: {required: i18next.t("customer.roleId_required")}
-                    },
+                    username: { minlength: i18next.t("customer.username_minlength"), required: i18next.t("customer.username_required"), remote: i18next.t("customer.username_remote") },
+                    password: { minlength: i18next.t("customer.password_minlength"), required: i18next.t("customer.password_required") },
+                    password2: { required: i18next.t("customer.password2_required"), minlength: i18next.t("customer.password2_minlength"), equalTo: i18next.t("customer.password2_equalTo") },
+                    employee_name: { required: i18next.t("depart.depart_name_required"), remote: i18next.t("depart.depart_name_remote") },
+                    roleId: { required: i18next.t("customer.roleId_required") }
+                },
                 highlight: function (element) {
                     $(element).closest('.control-group').removeClass('success').addClass('error');
                 },
@@ -306,7 +308,7 @@ $(document).ready(function () {
     }, 100);
 });
 
-function customerInfo(objectId){
+function customerInfo(objectId) {
     // var searchUrl = $.cookie('Host') + "customer/" + cust_id;
     // var searchData = { auth_code:auth_code };
     // var searchObj = { type:"GET", url:searchUrl, data:searchData, success:function (json) {
@@ -316,15 +318,18 @@ function customerInfo(objectId){
     var query_json = {
         objectId: objectId
     };
-    wistorm_api._get('employee', query_json, 'objectId,uid,companyId,departId,name,sex,tel,email,role,roleId,responsibility,isDriver,isInCharge,createdAt,updatedAt', auth_code, true, function(json){
+    debugger;
+    wistorm_api._get('employee', query_json, 'objectId,uid,companyId,departId,name,sex,tel,wechat,email,role,roleId,responsibility,isDriver,isInCharge,createdAt,updatedAt', auth_code, true, function (json) {
         query_json = {
             objectId: json.data.uid
         };
-        wistorm_api.get(query_json, 'username,mobile,email,password,userType', auth_code, function(user){
+        user_id = json.data.uid
+        wistorm_api.get(query_json, 'username,mobile,email,password,userType', auth_code, function (user) {
             json.data.username = user.data.username || user.data.mobile || user.data.email;
             json.data.password = '****************';
             json.data.userType = user.data.userType;
-            getRole(objectId, function(roleId){
+           
+            getRole(user_id, function (roleId) {
                 json.data.roleId = roleId;
                 customerInfoSuccess(json);
             });
@@ -332,17 +337,18 @@ function customerInfo(objectId){
     });
 }
 
-var customerInfoSuccess = function(json) {
+var customerInfoSuccess = function (json) {
     //alert(json);
     _validator.resetForm();
     var create_time = new Date(json.data.createdAt);
     create_time = create_time.format("yyyy-MM-dd hh:mm:ss");
-    initFrmEmployee(i18next.t("employee.edit_employee"), 2, json.data.username, json.data.password, json.data.name, json.data.sex, json.data.tel, json.data.email, json.data.role, json.data.responsibility, json.data.isDriver, json.data.isInCharge, create_time, json.data.roleId);
+    initFrmEmployee(i18next.t("employee.edit_employee"), 2, json.data.username, json.data.password, json.data.name, json.data.sex, json.data.tel, json.data.wechat, json.data.email, json.data.role, json.data.responsibility, json.data.isDriver, json.data.isInCharge, create_time, json.data.roleId);
     $("#divEmployee").dialog("open");
 };
 
 // 初始化客户信息窗体
-var initFrmEmployee = function(title, flag, username, password, name, sex, tel, email, role, responsibility, isDriver, isInCharge, create_time, roleId){
+var initFrmEmployee = function (title, flag, username, password, name, sex, tel, wechat, email, role, responsibility, isDriver, isInCharge, create_time, roleId) {
+    debugger;
     $("#divEmployee").dialog("option", "title", title);
     _flag = flag;
     $('#username').val(username);
@@ -353,6 +359,7 @@ var initFrmEmployee = function(title, flag, username, password, name, sex, tel, 
     $('#roleId').val(roleId.toString());
     $('#sex').val(sex);
     $('#tel').val(tel);
+    $('#cornet').val(wechat);
     $('#email').val(email);
     $('#identity').val(role);
     $('#use_vehicle').prop("checked", responsibility.indexOf('1') > -1);
@@ -363,16 +370,16 @@ var initFrmEmployee = function(title, flag, username, password, name, sex, tel, 
     $('#is_driver').prop("checked", isDriver);
     $('#is_in_charge').prop("checked", isInCharge);
     $('#create_time').val(create_time);
-    if(_flag === 1){
+    if (_flag === 1) {
         $('#username').removeAttr("disabled");
         $('#password').removeAttr("disabled");
         $('#password_bar').show();
         $('#password_bar2').show();
         $('#create_time_bar').hide();
         $('#resetPassword').hide();
-    }else{
-        $('#username').attr("disabled","disabled");
-        $('#password').attr("disabled","disabled");
+    } else {
+        $('#username').attr("disabled", "disabled");
+        $('#password').attr("disabled", "disabled");
         $('#password_bar2').hide();
         $('#create_time_bar').show();
         $('#resetPassword').show();
@@ -384,17 +391,17 @@ function customerQuery() {
     var dealer_id = $.cookie('dealer_id');
     var tree_path = $.cookie('tree_path');
     var key = '';
-    if($('#searchKey').val() !== ''){
+    if ($('#searchKey').val() !== '') {
         key = $('#searchKey').val().trim();
     }
 
     var query_json;
-    if(key !== ""){
+    if (key !== "") {
         query_json = {
             uid: dealer_id,
             name: '^' + key
         };
-    }else{
+    } else {
         query_json = {
             uid: dealer_id
         };
@@ -410,7 +417,7 @@ var treeIcon = {
     '99': '/img/depart_icon.png'
 };
 
-var customerQuerySuccess = function(json) {
+var customerQuerySuccess = function (json) {
     var names = [];
     customers = json.data;
     if (json.data.length > 0) {
@@ -425,7 +432,7 @@ var customerQuerySuccess = function(json) {
         departs[json.data[i].objectId.toString()] = json.data[i].name;
     }
 
-    var onCustomerSelectClick = function(event, treeId, treeNode){
+    var onCustomerSelectClick = function (event, treeId, treeNode) {
         depart_id = treeNode.id;
         selectNode = treeNode;
         $.cookie('depart_id', depart_id);
@@ -434,24 +441,25 @@ var customerQuerySuccess = function(json) {
         getAllEmployee(depart_id);
     };
 
-    var onCustomerAssignClick = function(event, treeId, treeNode){
-        if(parseInt(treeNode.id) > 100){
+    var onCustomerAssignClick = function (event, treeId, treeNode) {
+        // debugger;
+        if (parseInt(treeNode.id) > 0) {
             assignUid = treeNode.id;
             assignName = treeNode.name;
         }
     };
 
     var setting = {
-        view: {showIcon: true},
-        check: {enable: false, chkStyle: "checkbox"},
-        data: {simpleData: {enable: true}},
-        callback: {onClick: onCustomerSelectClick}
+        view: { showIcon: true },
+        check: { enable: false, chkStyle: "checkbox" },
+        data: { simpleData: { enable: true } },
+        callback: { onClick: onCustomerSelectClick }
     };
     var settingAssign = {
-        view: {showIcon: true},
-        check: {enable: false, chkStyle: "checkbox"},
-        data: {simpleData: {enable: true}},
-        callback: {onClick: onCustomerAssignClick}
+        view: { showIcon: true },
+        check: { enable: false, chkStyle: "checkbox" },
+        data: { simpleData: { enable: true } },
+        callback: { onClick: onCustomerAssignClick }
     };
 
     var customerArray = [];
@@ -473,13 +481,13 @@ var customerQuerySuccess = function(json) {
     // 创建三个分类的根节点
     for (var i = 0; i < json.data.length; i++) {
         // 如果为成员登陆，则加载本级及下级
-        if(['9', '12', '13'].indexOf(dealer_type) > -1){
-            if(json.data[i].objectId.toString() !== login_depart_id && json.data[i].parentId.toString() !== login_depart_id){
+        if (['9', '12', '13'].indexOf(dealer_type) > -1) {
+            if (json.data[i].objectId.toString() !== login_depart_id && json.data[i].parentId.toString() !== login_depart_id) {
                 continue;
             }
         }
         var pId = dealer_id;
-        if(json.data[i]['parentId'] > 0 && ['9', '12'].indexOf(dealer_type) === -1){
+        if (json.data[i]['parentId'] > 0 && ['9', '12'].indexOf(dealer_type) === -1) {
             pId = json.data[i]['parentId'];
         }
         customerArray.push({
@@ -502,22 +510,22 @@ var customerQuerySuccess = function(json) {
     $.fn.zTree.init($("#customerTree"), setting, customerArray);
     $.fn.zTree.init($("#departTreeAssign"), settingAssign, selectArray);
 
-    $('#customerKey').typeahead({source:names});
+    $('#customerKey').typeahead({ source: names });
 
-    if(depart_id > 0){
+    if (depart_id > 0) {
         var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         var node = treeObj.getNodeByParam("id", depart_id, null);
-        if(node){
+        if (node) {
             cust_name = node.name;
             $('#selCustName').html(cust_name);
             treeObj.selectNode(node);
-        }else{
+        } else {
             node = treeObj.getNodeByParam("id", dealer_id, null);
             cust_name = node.name;
             $('#selCustName').html(cust_name);
             treeObj.selectNode(node);
         }
-        if(typeof getAllEmployee != "undefined"){
+        if (typeof getAllEmployee != "undefined") {
             getAllEmployee(depart_id);
         }
     }
@@ -525,43 +533,43 @@ var customerQuerySuccess = function(json) {
 
 var getAllEmployee = function (uid) {
     var key = '';
-    if($('#customerKey').val() !== ''){
+    if ($('#customerKey').val() !== '') {
         key = $('#customerKey').val().trim();
     }
     var query_json;
-    if(uid === dealer_id){
-        if(key !== ""){
+    if (uid === dealer_id) {
+        if (key !== "") {
             var searchType = $('#searchType').val();
             query_json = {
                 companyId: uid
             };
             query_json[searchType] = '^' + key;
-        }else{
+        } else {
             query_json = {
                 companyId: uid
             };
         }
-        if(['9', '12', '13'].indexOf(dealer_type) > -1){
+        if (['9', '12', '13'].indexOf(dealer_type) > -1) {
             query_json['departId'] = login_depart_id;
         }
-    }else{
-        if(key !== ""){
+    } else {
+        if (key !== "") {
             var searchType = $('#searchType').val();
             query_json = {
                 departId: uid
             };
             query_json[searchType] = '^' + key;
-        }else{
+        } else {
             query_json = {
                 departId: uid
             };
         }
     }
     // wistorm_api._list('customer', query_json, 'objectId,name,treePath,parentId,uid,custType,other', 'custType,name', '-createdAt', 0, 0, 1, -1, auth_code, true, customerQuerySuccess)
-    wistorm_api._list('employee', query_json, 'objectId,uid,companyId,departId,name,sex,tel,email,role,roleId,responsibility,isDriver,isInCharge,createdAt,updatedAt', 'name', 'name', 0, 0, 1, -1, auth_code, true, querySuccess);
+    wistorm_api._list('employee', query_json, 'objectId,uid,companyId,departId,name,sex,tel,wechat,email,role,roleId,responsibility,isDriver,isInCharge,createdAt,updatedAt', 'name', 'name', 0, 0, 1, -1, auth_code, true, querySuccess);
 };
 
-var querySuccess = function(json) {
+var querySuccess = function (json) {
     var roleDesc = {
         '9': i18next.t("employee.staff_member"),
         '12': i18next.t("employee.depart_leader"),
@@ -579,33 +587,38 @@ var querySuccess = function(json) {
         //     return "<input type='checkbox' value='" + obj.aData.objectId + "'>";
         // }
         // },
-        { "mData":"name", "sClass":"ms_left" },
-        { "mData":null, "sClass":"center", "bSortable":false, "fnRender":function (obj) {
-            return departs[obj.aData.departId];
-        }},
-        { "mData":null, "sClass":"center", "bSortable":false, "fnRender":function (obj) {
-            return roleDesc[obj.aData.role];
-        }},
-        { "mData":"tel", "sClass":"center" },
-        { "mData":"createdAt", "sClass":"center"},
-        { "mData":null, "sClass":"center", "bSortable":false, "fnRender":function (obj) {
-            return "<a href='#' title='" + i18next.t("table.edit") + "'><i class='icon-edit' cust_id='" + obj.aData.objectId + "'></i></a>&nbsp&nbsp<a href='#' title='" + i18next.t("table.change_parent") + "'><i class='icon-retweet' cust_id='" + obj.aData.objectId + "' cust_name='" + obj.aData.name + "'></i></a>&nbsp&nbsp<a href='#' title='" + i18next.t("table.delete") + "'><i class='icon-remove' cust_id='" +
-                obj.aData.objectId + "' cust_name='" + obj.aData.name + "'></i></a>";
-        }
+        { "mData": "name", "sClass": "ms_left" },
+        {
+            "mData": null, "sClass": "center", "bSortable": false, "fnRender": function (obj) {
+                return departs[obj.aData.departId];
+            }
+        },
+        {
+            "mData": null, "sClass": "center", "bSortable": false, "fnRender": function (obj) {
+                return roleDesc[obj.aData.role];
+            }
+        },
+        { "mData": "tel", "sClass": "center" },
+        { "mData": "createdAt", "sClass": "center" },
+        {
+            "mData": null, "sClass": "center", "bSortable": false, "fnRender": function (obj) {
+                return "<a href='#' title='" + i18next.t("table.edit") + "'><i class='icon-edit' cust_id='" + obj.aData.objectId + "'></i></a>&nbsp&nbsp<a href='#' title='" + i18next.t("table.change_parent") + "'><i class='icon-retweet' cust_id='" + obj.aData.objectId + "' cust_name='" + obj.aData.name + "'></i></a>&nbsp&nbsp<a href='#' title='" + i18next.t("table.delete") + "'><i class='icon-remove' cust_id='" +
+                    obj.aData.objectId + "' cust_name='" + obj.aData.name + "'></i></a>";
+            }
         }
     ];
     var lang = i18next.language || 'en';
     var objTable = {
-        "bInfo":false,
-        "bLengthChange":false,
-        "bProcessing":true,
-        "bServerSide":false,
-        "bFilter":false,
-        "aaData":json.data,
-        "aoColumns":_columns,
-        "sDom":"<'row'r>t<'row'<'pull-right'p>>",
-        "sPaginationType":"bootstrap",
-        "oLanguage":{"sUrl":'css/' + lang + '.txt'}
+        "bInfo": false,
+        "bLengthChange": false,
+        "bProcessing": true,
+        "bServerSide": false,
+        "bFilter": false,
+        "aaData": json.data,
+        "aoColumns": _columns,
+        "sDom": "<'row'r>t<'row'<'pull-right'p>>",
+        "sPaginationType": "bootstrap",
+        "oLanguage": { "sUrl": 'css/' + lang + '.txt' }
     };
 
     $('#searchKey').typeahead({
@@ -623,10 +636,10 @@ var querySuccess = function(json) {
         localize('.table');
     }
 
-    if($("#customerKey").val() !== '' && json.data.length === 1){
+    if ($("#customerKey").val() !== '' && json.data.length === 1) {
         var treeObj = $.fn.zTree.getZTreeObj("customerTree");
         var node = treeObj.getNodeByParam("id", json.data[0].parentId[0], null);
-        if(node){
+        if (node) {
             cust_name = node.name;
             $('#selCustName').html(cust_name);
             treeObj.selectNode(node);
@@ -634,14 +647,14 @@ var querySuccess = function(json) {
     }
 };
 
-var getStyle = function(level){
+var getStyle = function (level) {
     var style = "padding-left: " + (level - 1) * 10 + "px";
     return style;
 };
 
-// 新增部门
-var customerAdd = function(){
-    if(doing){
+// 新增人员
+var customerAdd = function () {
+    if (doing) {
         return;
     }
     doing = true;
@@ -651,26 +664,28 @@ var customerAdd = function(){
     var employee_name = $('#employee_name').val(); //用户名称，只有当用户类型为集团用户时有效，需判断用户名是否存在
     var sex = $('#sex').val();
     var tel = $('#tel').val();
+    var wechat = $('#cornet').val();
     var email = $('#email').val();
     var role = $('#identity').val();
     var responsibility = [];
-    if($("#use_vehicle").prop("checked"))responsibility.push("1");
-    if($("#manage_vehicle").prop("checked"))responsibility.push("2");
-    if($("#dispatch_vehicle").prop("checked"))responsibility.push("3");
-    if($("#secretary").prop("checked"))responsibility.push("4");
-    if($("#finance").prop("checked"))responsibility.push("5");
+    if ($("#use_vehicle").prop("checked")) responsibility.push("1");
+    if ($("#manage_vehicle").prop("checked")) responsibility.push("2");
+    if ($("#dispatch_vehicle").prop("checked")) responsibility.push("3");
+    if ($("#secretary").prop("checked")) responsibility.push("4");
+    if ($("#finance").prop("checked")) responsibility.push("5");
     var is_driver = $('#is_driver').prop("checked");
     var is_in_charge = $('#is_in_charge').prop("checked");
 
     // wistorm_api._create('department', create_json, auth_code, true, customerAddSuccess);
     wistorm_api.create(username, username, '', password, role, 2, dealer_id, {}, auth_code, function (obj) {
-        if(obj.status_code === 0 && obj.uid){
+        if (obj.status_code === 0 && obj.uid) {
             var create_json = {
                 name: employee_name,
                 companyId: dealer_id,
                 departId: depart_id,
                 sex: sex,
                 tel: tel,
+                wechat: wechat,
                 email: email,
                 role: role,
                 roleId: roleId,
@@ -680,27 +695,27 @@ var customerAdd = function(){
                 uid: obj.uid
             };
             wistorm_api._create('employee', create_json, auth_code, true, customerAddSuccess);
-            setRole(obj.uid, roleId, function(obj){
+            setRole(obj.uid, roleId, function (obj) {
             });
-        }else{
+        } else {
             _alert(i18next.t("employee.msg_add_fail"));
             doing = false;
         }
     });
 };
 
-var customerAddSuccess = function(json) {
-    if(json.status_code === 0){
+var customerAddSuccess = function (json) {
+    if (json.status_code === 0) {
         $("#divEmployee").dialog("close");
         getAllEmployee(depart_id);
-    }else{
+    } else {
         _alert(i18next.t("employee.msg_add_fail"));
     }
     doing = false;
 };
 
 // 编辑客户
-var customerEdit = function(){
+var customerEdit = function () {
     var auth_code = $.cookie('auth_code');
     var username = $('#username').val();
     var roleId = $('#roleId').val();
@@ -708,14 +723,15 @@ var customerEdit = function(){
     var employee_name = $('#employee_name').val(); //用户名称，只有当用户类型为集团用户时有效，需判断用户名是否存在
     var sex = $('#sex').val();
     var tel = $('#tel').val();
+    var wechat = $('#cornet').val();
     var email = $('#email').val();
     var role = $('#identity').val();
     var responsibility = [];
-    if($("#use_vehicle").prop("checked"))responsibility.push("1");
-    if($("#manage_vehicle").prop("checked"))responsibility.push("2");
-    if($("#dispatch_vehicle").prop("checked"))responsibility.push("3");
-    if($("#secretary").prop("checked"))responsibility.push("4");
-    if($("#finance").prop("checked"))responsibility.push("5");
+    if ($("#use_vehicle").prop("checked")) responsibility.push("1");
+    if ($("#manage_vehicle").prop("checked")) responsibility.push("2");
+    if ($("#dispatch_vehicle").prop("checked")) responsibility.push("3");
+    if ($("#secretary").prop("checked")) responsibility.push("4");
+    if ($("#finance").prop("checked")) responsibility.push("5");
     var is_driver = $('#is_driver').prop("checked");
     var is_in_charge = $('#is_in_charge').prop("checked");
 
@@ -726,6 +742,7 @@ var customerEdit = function(){
         name: employee_name,
         sex: sex,
         tel: tel,
+        wechat: wechat,
         email: email,
         role: role,
         roleId: roleId,
@@ -733,66 +750,66 @@ var customerEdit = function(){
         isDriver: is_driver,
         isInCharge: is_in_charge
     };
-    wistorm_api._update('employee', query_json, update_json, auth_code, true, function(json){
-        if(json.status_code === 0){
+    wistorm_api._update('employee', query_json, update_json, auth_code, true, function (json) {
+        if (json.status_code === 0) {
             var query_json = {
-                objectId: cust_id
+                objectId: user_id
             };
             var update_json = {
                 userType: role
             };
-            if(password !== '****************'){
+            if (password !== '****************') {
                 update_json.password = password;
             }
+            debugger;
             wistorm_api.update(query_json, update_json, auth_code, customerEditSuccess);
-        }else{
+        } else {
             _alert(i18next.t("customer.msg_edit_fail"));
         }
     });
-    setRole(cust_id, roleId, function(obj){
-    });
+    setRole(user_id, roleId, function (obj) { });
 };
 
-var customerEditSuccess = function(json) {
-    if(json.status_code === 0){
+var customerEditSuccess = function (json) {
+    if (json.status_code === 0) {
         $("#divEmployee").dialog("close");
         getAllEmployee(depart_id);
-    }else{
+    } else {
         _alert(i18next.t("employee.msg_edit_fail"));
     }
 };
 
 // 删除客户
-var customerDelete = function(cust_id){
+var customerDelete = function (cust_id) {
     var query_json = {
         objectId: cust_id
     };
     wistorm_api._delete('employee', query_json, auth_code, true, _deleteSuccess);
 };
 
-var _deleteSuccess = function(json) {
-    if(json.status_code === 0){
+var _deleteSuccess = function (json) {
+    if (json.status_code === 0) {
         getAllEmployee(depart_id);
-    }else{
+    } else {
         _alert(i18next.t("employee.msg_delete_fail"));
     }
 };
 
 // 获取客户信息
-var getLocalCustomerInfo = function(cust_id){
+var getLocalCustomerInfo = function (cust_id) {
     var customer = {};
     for (var i = 0; i < customers.length; i++) {
-        if(customers[i].objectId == cust_id){
+        if (customers[i].objectId == cust_id) {
             customer = customers[i];
             return customer;
         }
     }
 };
 
-var searchLocalCustomerInfoByName = function(cust_name){
+var searchLocalCustomerInfoByName = function (cust_name) {
     var customer = {};
     for (var i = 0; i < customers.length; i++) {
-        if(customers[i].cust_name.indexOf(cust_name) > -1){
+        if (customers[i].cust_name.indexOf(cust_name) > -1) {
             customer = customers[i];
             return customer;
         }

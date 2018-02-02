@@ -1,12 +1,13 @@
 $(document).ready(function () {
-    var _user = JSON.parse(localStorage.getItem('user1'));
+    var _user = JSON.parse(sessionStorage.getItem('user'));
+    var companyId = $.cookie('dealer_id')
     getDepart()
     console.log(_user, 'user')
     var car_data = [];
     var vehicleId = null;
     var option = {}
     function getDepart() {
-        wistorm_api._list('department', { objectId: '>0', uid: _user.employee.companyId }, '', '', '-createdAt', 0, 0, 1, -1, W.getCookie('auth_code'), true, function (dep) {
+        wistorm_api._list('department', { objectId: '>0', uid: companyId }, '', '', '-createdAt', 0, 0, 1, -1, W.getCookie('auth_code'), true, function (dep) {
             console.log(dep, 'depart');
             $('#depart').on('click', function () {
                 var depart_data = [];
@@ -37,7 +38,7 @@ $(document).ready(function () {
         })
     }
     function getVehicl(val) {
-        wistorm_api._list('vehicle', { departId: val, uid: _user.employee.companyId }, '', '', '-createdAt', 0, 0, 1, -1, W.getCookie('auth_code'), true, function (veh) {
+        wistorm_api._list('vehicle', { departId: val, uid: companyId }, '', '', '-createdAt', 0, 0, 1, -1, W.getCookie('auth_code'), true, function (veh) {
             // console.log(veh)
             veh.data.forEach((ele, index) => {
                 var op = {};

@@ -231,6 +231,7 @@ $(document).ready(function () {
         });
 
         $('#frmCustomerAssign').submit(function () {
+            // debugger;
             var msg = i18next.t("customer.msg_change_parent", {cust_name: cust_name, assignName: assignName}); //'你确定将用户[' + cust_name + ']的上级用户更换为[' + assignName + ']吗?';
             if (assignUid === $.cookie('parent_id')) {
                 msg = i18next.t("customer.msg_restore_parent", {cust_name: cust_name}); //'你确定将用户[' + cust_name + ']恢复到上级用户进行管理吗?';

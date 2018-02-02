@@ -33,7 +33,7 @@
                     </h3>
                 </div>
             </div>
-            <div style="border:1px solid #ccc;margin-left: 15px;">
+            <div style="border:1px solid #ccc">
                 <div class="weui-flex">
                     <div class="weui-flex__item">
                         <div class="weui-flex">
@@ -61,6 +61,28 @@
                                             <option>Relish</option> -->
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-flex">
+                    <div class="weui-flex__item">
+                        <div class="weui-flex">
+                            <div class="flex4 column apply2_detail">
+                                当前流程：
+                            </div>
+                            <div class="flex8 column apply2_detail1" id="dqlc">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-flex__item">
+                        <div class="weui-flex">
+                            <!-- <div class="flex4 column apply2_detail">
+                                同行：
+                            </div>
+                            <div class="flex8 column apply2_detail1" id="peer">
+
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -190,7 +212,6 @@
 
         <div class="row clearfix" style="margin-bottom:20px;display:none" id="print_button">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="print">
                     打印
                 </button>
@@ -202,7 +223,6 @@
 
         <div class="row clearfix" style="margin-bottom:20px;display:none" id="other_button">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="agree">
                     同意
                 </button>
@@ -213,7 +233,6 @@
         </div>
         <div class="row clearfix" style="margin-bottom:20px;display:none" id="my_button">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="urge">
                     催办
                 </button>
@@ -223,87 +242,52 @@
             </div>
         </div>
 
-        <!-- <div class="b_c_w submit b_t_1" style="display:none" id="carlist_back">
-            <div class="weui-flex">
-                <div class="weui-flex__item">
-                    <a class="weui-cell weui-cell_access p_0 " href="javascript:;">
-                        <div class="weui-media-box weui-media-box_text w_100 t_a_c">
-                            <i class="weui-icon-success-no-circle f14"></i> 通知车队还车
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div> -->
-        <div class="row clearfix" style="margin-bottom:20px;display:none" id="carlist_back">
+      
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="call_vechicle_back">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="carlist_back1">
                     通知车队还车
                 </button>
             </div>
         </div>
 
-        <!-- <div class="b_c_w submit b_t_1" style="display:none" id="pcar_dd">
-            <div class="weui-flex">
-                <div class="weui-flex__item">
-                    <a class="weui-cell weui-cell_access p_0 " href="javascript:;" id="pcar_dd1">
-                        <div class="weui-media-box weui-media-box_text w_100 t_a_c">
-                            <i class="weui-icon-success-no-circle f14"></i> 派车
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div> -->
-        <div class="row clearfix" style="margin-bottom:20px;display:none" id="give_car">
+        
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="other_vehicle_send">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
+                
                 <button class="btn btn-default" type="button" id="pcar_dd">
                     派车
                 </button>
             </div>
         </div>
         <!-- 我还车 -->
-        <!-- <div class="b_c_w submit b_t_1" style="display:none" id="back_car">
-            <div class="weui-flex">
-                <div class="weui-flex__item">
-                    <a class="weui-cell weui-cell_access p_0 " href="javascript:;" id="backout_car">
-                        <div class="weui-media-box weui-media-box_text w_100 t_a_c">
-                            <i class="weui-icon-success-no-circle f14"></i> 还车
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div> -->
-        <div class="row clearfix" style="margin-bottom:20px;display:none" id="back_car">
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="my_back_car">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="back_car1">
-                    还车
+                    归还车辆
                 </button>
             </div>
         </div>
+
         <!-- 车队还车 -->
-        <!-- <div class="b_c_w submit b_t_1" style="display:none" id="back_carlist">
-            <div class="weui-flex">
-                <div class="weui-flex__item">
-                    <a class="weui-cell weui-cell_access p_0 " href="javascript:;" id="">
-                        <div class="weui-media-box weui-media-box_text w_100 t_a_c">
-                            <i class="weui-icon-success-no-circle f14"></i> 还车
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div> -->
-        <div class="row clearfix" style="margin-bottom:20px;display:none" id="back_carlist">
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="vehicle_back">
             <div class="col-md-12 column" style="text-align:center">
-                <!-- <div class="btn-group"> -->
                 <button class="btn btn-default" type="button" id="back_carlist1">
-                    还车
+                    归还车辆
+                </button>
+            </div>
+        </div>
+
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="delete_button">
+            <div class="col-md-12 column" style="text-align:center">
+                <button class="btn btn-default" type="button" id="">
+                    删除
                 </button>
             </div>
         </div>
     </div>
-    <div class="js_dialog" id="androidDialog1" style="opacity: 0; display: none;">
+
+    <div class="js_dialog" id="androidDialog1" style="opacity: 1; display: none;">
         <div class="weui-mask"></div>
         <div class="weui-dialog weui-skin_android">
             <div class="weui-dialog__hd">
@@ -346,6 +330,7 @@
     <script src="js/locales.js"></script>
     <script src="js/merge/js/public.js"></script>
     <script src="js/merge/js/pc/car_detail.js"></script>
+    <script src="js/merge/js/config.js"></script>
 </body>
 
 </html>

@@ -90,14 +90,26 @@ exports.role = function (req, res) {
         res.redirect('/');
     }
 };
-
-exports.getPage = function (req, res) {
-    if (req.session.uid) {
-        res.send(req.session.groups);
+//
+exports.getPage = function(req, res){
+    if(req.session.uid){
+        res.send({
+            groups: req.session.groups,
+            features: req.session.features
+        });
     } else {
         res.send({});
     }
 };
+// exports.getPage = function (req, res) {
+//     if (req.session.uid) {
+//         // console.log(req.session.group,'group')
+//         res.send(req.session.groups);
+//     } else {
+//         res.send({});
+//     }
+// };
+
 
 exports.vehicle = function (req, res) {
     if (checkValid(req)) {
@@ -339,33 +351,129 @@ exports.loginAndSave = function (req, res) {
     });
 };
 
-var getInfo = function (wistorm_api, uid, user, password, req, res) {
+// var getInfo = function (wistorm_api, uid, user, password, req, res) {
+//     var lang = req.session.lang;
+//     var opt = req.session.opt;
+//     console.log('session opt: ' + req.session.opt);
+//     var query_json = {
+//         uid: user.uid + '|' + user.pid
+//     };
+
+//     wistorm_api._list('customer', query_json, 'uid,name,contact,tel,remark,treePath', '', '', 0, 0, 1, -1, user.access_token, true, function (customer) {
+//         // 获取角色
+//         var query_json = {
+//             users: uid.toString()
+//         };
+//         wistorm_api._get('role', query_json, 'objectId', user.access_token, false, function (role) {
+//             if (role.status_code === 0 && role.data !== null) {
+//                 query_json = {
+//                     ACL: 'role:' + role.data.objectId
+//                 };
+//                 wistorm_api._list('page', query_json, 'objectId,group,name,groupLocale,nameLocale,key,url,order', '-group,order', 'name', 0, 0, 1, -1, user.access_token, false, function (pages) {
+//                     if (pages.status_code === 0) {
+//                         var group;
+//                         var groups = [];
+//                         var validPages = {};
+//                         var oldGroup = '';
+//                         for (var i = 0; i < pages.total; i++) {
+//                             validPages[pages.data[i].url] = true;
+//                             if (oldGroup !== pages.data[i].group) {
+//                                 group = {
+//                                     name: pages.data[i].groupLocale[lang],
+//                                     pages: []
+//                                 };
+//                                 group.pages.push({
+//                                     id: pages.data[i].objectId,
+//                                     name: pages.data[i].nameLocale[lang],
+//                                     url: pages.data[i].url
+//                                 });
+//                                 groups.push(group);
+//                                 oldGroup = pages.data[i].group;
+//                             } else {
+//                                 groups[groups.length - 1].pages.push({
+//                                     id: pages.data[i].objectId,
+//                                     name: pages.data[i].nameLocale[lang],
+//                                     url: pages.data[i].url
+//                                 });
+//                             }
+//                         }
+//                     }
+//                     req.session.groups = groups;
+//                     if (validPages['/monitor']) {
+//                         validPages['/trace'] = true;
+//                     }
+//                     validPages['/summary'] = true;
+//                     req.session.validPages = validPages;
+//                     req.session.user = util.clone(user);
+//                     if (groups.length > 0 && groups[0].pages.length > 0) {
+//                         user.default_page = groups[0].pages[0].url;
+//                     }
+//                     user.default_page = '/summary';
+//                     // 用户信息
+//                     if (customer) {
+//                         if (customer.data.length === 1) {
+//                             user.name = customer.data[0].name;
+//                             user.tree_path = customer.data[0].treePath;
+//                             user.parent_name = '';
+//                             user.parent_contact = '';
+//                             user.parent_tel = '';
+//                         } else if (customer.data.length === 2) {
+//                             if (customer.data[0].uid === user.uid) {
+//                                 user.name = customer.data[0].name;
+//                                 user.tree_path = customer.data[0].treePath;
+//                                 user.parent_name = customer.data[1].name;
+//                                 user.parent_contact = customer.data[1].contact;
+//                                 user.parent_tel = customer.data[1].tel;
+//                             } else {
+//                                 user.name = customer.data[1].name;
+//                                 user.tree_path = customer.data[1].treePath;
+//                                 user.parent_name = customer.data[0].name;
+//                                 user.parent_contact = customer.data[0].contact;
+//                                 user.parent_tel = customer.data[0].tel;
+//                             }
+//                         }
+//                     }
+//                     user.app_key = opt.app_key;
+//                     user.app_secret = opt.app_secret;
+//                     user.dev_key = opt.dev_key;
+//                     user.sec_pass = util.md5(password);
+//                     res.send(user);
+//                 });
+//             } else {
+//                 user.status_code = 3;
+//                 res.send(user);
+//             }
+//         });
+//     });
+// };
+
+var getInfo = function(wistorm_api, uid, user, password, req, res){
     var lang = req.session.lang;
     var opt = req.session.opt;
     console.log('session opt: ' + req.session.opt);
     var query_json = {
-        uid: user.uid + '|' + user.pid
+        uid: user.uid  + '|' + user.pid
     };
 
-    wistorm_api._list('customer', query_json, 'uid,name,contact,tel,remark,treePath', '', '', 0, 0, 1, -1, user.access_token, true, function (customer) {
+    wistorm_api._list('customer', query_json, 'uid,name,contact,tel,remark,treePath', '', '', 0, 0, 1, -1, user.access_token, true, function(customer){
         // 获取角色
         var query_json = {
             users: uid.toString()
         };
-        wistorm_api._get('role', query_json, 'objectId', user.access_token, false, function (role) {
-            if (role.status_code === 0 && role.data !== null) {
+        wistorm_api._get('role', query_json, 'objectId', user.access_token, false, function(role){
+            if(role.status_code === 0 && role.data !== null){
                 query_json = {
                     ACL: 'role:' + role.data.objectId
                 };
-                wistorm_api._list('page', query_json, 'objectId,group,name,groupLocale,nameLocale,key,url,order', '-group,order', 'name', 0, 0, 1, -1, user.access_token, false, function (pages) {
-                    if (pages.status_code === 0) {
+                wistorm_api._list('page', query_json, 'objectId,group,name,groupLocale,nameLocale,key,url,order', '-group,order', 'name', 0, 0, 1, -1, user.access_token, false, function(pages){
+                    if(pages.status_code === 0){
                         var group;
                         var groups = [];
                         var validPages = {};
                         var oldGroup = '';
-                        for (var i = 0; i < pages.total; i++) {
+                        for(var i = 0; i < pages.total; i++){
                             validPages[pages.data[i].url] = true;
-                            if (oldGroup !== pages.data[i].group) {
+                            if(oldGroup !== pages.data[i].group){
                                 group = {
                                     name: pages.data[i].groupLocale[lang],
                                     pages: []
@@ -377,7 +485,7 @@ var getInfo = function (wistorm_api, uid, user, password, req, res) {
                                 });
                                 groups.push(group);
                                 oldGroup = pages.data[i].group;
-                            } else {
+                            }else{
                                 groups[groups.length - 1].pages.push({
                                     id: pages.data[i].objectId,
                                     name: pages.data[i].nameLocale[lang],
@@ -387,32 +495,32 @@ var getInfo = function (wistorm_api, uid, user, password, req, res) {
                         }
                     }
                     req.session.groups = groups;
-                    if (validPages['/monitor']) {
+                    if(validPages['/monitor']){
                         validPages['/trace'] = true;
                     }
                     validPages['/summary'] = true;
                     req.session.validPages = validPages;
                     req.session.user = util.clone(user);
-                    if (groups.length > 0 && groups[0].pages.length > 0) {
+                    if(groups.length > 0 && groups[0].pages.length > 0){
                         user.default_page = groups[0].pages[0].url;
                     }
                     user.default_page = '/summary';
                     // 用户信息
-                    if (customer) {
-                        if (customer.data.length === 1) {
+                    if(customer){
+                        if(customer.data.length === 1){
                             user.name = customer.data[0].name;
                             user.tree_path = customer.data[0].treePath;
                             user.parent_name = '';
                             user.parent_contact = '';
                             user.parent_tel = '';
-                        } else if (customer.data.length === 2) {
-                            if (customer.data[0].uid === user.uid) {
+                        }else if(customer.data.length === 2){
+                            if(customer.data[0].uid === user.uid){
                                 user.name = customer.data[0].name;
                                 user.tree_path = customer.data[0].treePath;
                                 user.parent_name = customer.data[1].name;
                                 user.parent_contact = customer.data[1].contact;
                                 user.parent_tel = customer.data[1].tel;
-                            } else {
+                            }else{
                                 user.name = customer.data[1].name;
                                 user.tree_path = customer.data[1].treePath;
                                 user.parent_name = customer.data[0].name;
@@ -425,15 +533,21 @@ var getInfo = function (wistorm_api, uid, user, password, req, res) {
                     user.app_secret = opt.app_secret;
                     user.dev_key = opt.dev_key;
                     user.sec_pass = util.md5(password);
-                    res.send(user);
+                    wistorm_api._list('feature', query_json, 'objectId,pageId,key,name,order', '-group,order', 'name', 0, 0, 1, -1, user.access_token, false, function(features) {
+                        if(features.status_code === 0 && features.total > 0){
+                            req.session.features = features.data;
+                        }
+                        res.send(user);
+                    });
                 });
-            } else {
+            }else{
                 user.status_code = 3;
                 res.send(user);
             }
         });
     });
 };
+
 
 exports.logout = function (req, res) {
     req.session.uid = null;

@@ -36,7 +36,7 @@
                     </h3>
                 </div>
             </div>
-            <div style="border:1px solid #ccc;margin-left: 15px;">
+            <div style="border:1px solid #ccc;">
                 <div class="weui-flex">
                     <div class="weui-flex__item">
                         <div class="weui-flex">
@@ -325,9 +325,9 @@
                 <button class="btn btn-default" type="button" id="backout">
                     撤销
                 </button>
-                <button class="btn btn-default" type="button" id="submitAndaudit">
+                <!-- <button class="btn btn-default" type="button" id="submitAndaudit">
                     确认并提交审核
-                </button>
+                </button> -->
             </div>
         </div>
         <div class="row clearfix" style="margin-bottom:20px;display:none" id="reimburse_button">
@@ -336,7 +336,14 @@
                 <button class="btn btn-default" type="button" id="reimburse">
                     报销审批
                 </button>
-               
+            </div>
+        </div>
+        <div class="row clearfix" style="margin-bottom:20px;display:none" id="delete_button">
+            <div class="col-md-12 column" style="text-align:center">
+                <!-- <div class="btn-group"> -->
+                <button class="btn btn-default" type="button" id="reimburse">
+                    删除
+                </button>
             </div>
         </div>
     </div>
@@ -347,51 +354,7 @@
                 <strong class="weui-dialog__title">同意并选择下一级审核人</strong>
             </div>
             <div class="weui-dialog__bd" style="max-height: 250px; overflow-y: auto;" id="nextAuditer">
-                <!-- <label>
-                    <div class="weui-cell weui-cell_access" id="` + str + `">
-                        <input type="radio" style="margin-right:5px" name='auditer' checked/>
-                        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
-                            <img src="js/merge/img/1.png" style="width: 50px;display: block">
-                        </div>
-                        <div class="weui-cell__bd">
-                            <p>xxx</p>
-                            <p style="font-size: 13px;color: #888888;">公司领导</p>
-                        </div>
-                    </div>
-                </label>
-                <label>
-                    <div class="weui-cell weui-cell_access" id="` + str + `">
-                        <input type="radio" style="margin-right:5px" name='auditer' checked/>
-                        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
-                            <img src="js/merge/img/1.png" style="width: 50px;display: block">
-                        </div>
-                        <div class="weui-cell__bd">
-                            <p>xxx</p>
-                            <p style="font-size: 13px;color: #888888;">公司领导</p>
-                        </div>
-                    </div>
-                </label> -->
-                <div class="weui-cell weui-cell_access">
-                    <input type="radio" style="margin-right:5px" name='auditer' checked id="ddd" />
-                    <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
-                        <img src="js/merge/img/1.png" style="width: 50px;display: block">
-                    </div>
-                    <div class="weui-cell__bd">
-                        <p>xxx</p>
-                        <p style="font-size: 13px;color: #888888;">公司领导</p>
-                    </div>
-                </div>
-                <div class="weui-cell weui-cell_access">
-                    <input type="radio" style="margin-right:5px" name='auditer' checked id="ddd" />
-                    <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
-                        <img src="js/merge/img/1.png" style="width: 50px;display: block">
-                    </div>
-                    <div class="weui-cell__bd">
-                        <p>xxx</p>
-                        <p style="font-size: 13px;color: #888888;">公司领导</p>
-                    </div>
-                </div>
-            </div>
+               
             <div class="weui-dialog__ft">
                 <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary " id="audit_commit">确定</a>
                 <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" id="audit_cancle">取消</a>
@@ -414,6 +377,7 @@
     <script src="js/locales.js"></script>
     <script src="js/merge/js/public.js"></script>
     <script src="js/merge/js/pc/repair_detail.js"></script>
+    <script src="js/merge/js/config.js"></script>
 </body>
 
 </html>
